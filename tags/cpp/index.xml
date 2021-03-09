@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>cpp on lchannng&#39;s blog</title>
+    <link>/tags/cpp/</link>
+    <description>Recent content in cpp on lchannng&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Tue, 21 May 2019 19:42:43 +0000</lastBuildDate><atom:link href="/tags/cpp/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>cpp对象内存布局.md</title>
+      <link>/posts/2019-05-21-cpp-object-memeoy-layout-md/</link>
+      <pubDate>Tue, 21 May 2019 19:42:43 +0000</pubDate>
+      
+      <guid>/posts/2019-05-21-cpp-object-memeoy-layout-md/</guid>
+      <description>前言 本文主要是分析一下cpp对象在单继承、多重继承、虚继承下的内存布局，给自己做个笔记&amp;hellip;
+正文 0.C结构体 先从C结构体说起，内存布局原则：成员变量按其被声明的顺序排列，按具体实现所规定的对齐原则在内存地址上对齐
+struct A { char c; int n; } [图] (挖坑待填&amp;hellip;)
+1.简单cpp结构 struct B { public: int b1; private: char b2; public: static int b3; void bf1(); static void bf2(); } (挖坑待填&amp;hellip;)
+2.单继承 (挖坑待填&amp;hellip;)</description>
+    </item>
+    
+  </channel>
+</rss>

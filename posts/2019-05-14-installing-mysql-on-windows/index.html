@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>Windows下安装mysql | lchannng&#39;s blog</title>
+<meta charset="utf-8">
+<meta name="generator" content="Hugo 0.81.0" />
+<meta name="description" content="my blog">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="css/index.css">
+<link rel="canonical" href="/posts/2019-05-14-installing-mysql-on-windows/">
+<link rel="alternate" type="application/rss+xml" href="" title="lchannng&#39;s blog">
+
+<header>
+  
+    <a href="" class="title">lchannng&#39;s blog</a>
+  
+  
+    <nav>
+    
+      <a href="/about/">About</a>
+    
+    </nav>
+  
+</header>
+
+<article>
+  <header>
+    <h1>Windows下安装mysql</h1>
+    <time datetime="2019-05-14T15:12:15Z">May 14, 2019</time>
+  </header>
+  <p>文档传送门(<a href="https://dev.mysql.com/doc/refman/8.0/en/windows-installation.html">https://dev.mysql.com/doc/refman/8.0/en/windows-installation.html</a>)</p>
+<p>从noinstall ZIP Archive安装</p>
+<p>初始化data目录</p>
+<pre><code>mysqld --initialize --console
+</code></pre><p>登录, 输入随机生成的密码</p>
+<pre><code>mysql -u root -p
+</code></pre><p>修改密码</p>
+<pre><code>ALTER USER 'root'@'localhost' IDENTIFIED BY 'your-password';
+</code></pre>
+</article>
+
+
+
+</html>

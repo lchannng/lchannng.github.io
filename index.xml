@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>lchannng&#39;s blog</title>
+    <link>/</link>
+    <description>Recent content on lchannng&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Tue, 21 May 2019 19:42:43 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>cpp对象内存布局.md</title>
+      <link>/posts/2019-05-21-cpp-object-memeoy-layout-md/</link>
+      <pubDate>Tue, 21 May 2019 19:42:43 +0000</pubDate>
+      
+      <guid>/posts/2019-05-21-cpp-object-memeoy-layout-md/</guid>
+      <description>前言 本文主要是分析一下cpp对象在单继承、多重继承、虚继承下的内存布局，给自己做个笔记&amp;hellip;
+正文 0.C结构体 先从C结构体说起，内存布局原则：成员变量按其被声明的顺序排列，按具体实现所规定的对齐原则在内存地址上对齐
+struct A { char c; int n; } [图] (挖坑待填&amp;hellip;)
+1.简单cpp结构 struct B { public: int b1; private: char b2; public: static int b3; void bf1(); static void bf2(); } (挖坑待填&amp;hellip;)
+2.单继承 (挖坑待填&amp;hellip;)</description>
+    </item>
+    
+    <item>
+      <title>go笔记 select实现</title>
+      <link>/posts/2019-05-16-go-select-implementation-md/</link>
+      <pubDate>Thu, 16 May 2019 20:05:29 +0000</pubDate>
+      
+      <guid>/posts/2019-05-16-go-select-implementation-md/</guid>
+      <description>待续&amp;hellip;
+ref: select源码</description>
+    </item>
+    
+    <item>
+      <title>go笔记 defer,panic,recover</title>
+      <link>/posts/2019-05-16-go-defer-panic-recover/</link>
+      <pubDate>Thu, 16 May 2019 15:01:58 +0000</pubDate>
+      
+      <guid>/posts/2019-05-16-go-defer-panic-recover/</guid>
+      <description>官方blog传送门：https://blog.golang.org/defer-panic-and-recover
+defer  A defer statement pushes a function call onto a list. The list of saved calls is executed after the surrounding function returns. Defer is commonly used to simplify functions that perform various clean-up actions.
+ defer类似cpp在对象在离开作用于后析构，defer可以多次，这样形成一个defer栈，后defer的语句在函数返回时将先被调用。
+func CopyFile(dstName, srcName string) (written int64, err error) { src, err := os.Open(srcName) if err != nil { return } defer src.Close() dst, err := os.Create(dstName) if err != nil { return } defer dst.</description>
+    </item>
+    
+    <item>
+      <title>Windows下安装mysql</title>
+      <link>/posts/2019-05-14-installing-mysql-on-windows/</link>
+      <pubDate>Tue, 14 May 2019 15:12:15 +0000</pubDate>
+      
+      <guid>/posts/2019-05-14-installing-mysql-on-windows/</guid>
+      <description>文档传送门(https://dev.mysql.com/doc/refman/8.0/en/windows-installation.html)
+从noinstall ZIP Archive安装
+初始化data目录
+mysqld --initialize --console 登录, 输入随机生成的密码
+mysql -u root -p 修改密码
+ALTER USER &#39;root&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;your-password&#39;; </description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>cpp对象内存布局.md | lchannng&#39;s blog</title>
+<meta charset="utf-8">
+<meta name="generator" content="Hugo 0.81.0" />
+<meta name="description" content="my blog">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="css/index.css">
+<link rel="canonical" href="/posts/2019-05-21-cpp-object-memeoy-layout-md/">
+<link rel="alternate" type="application/rss+xml" href="" title="lchannng&#39;s blog">
+
+<header>
+  
+    <a href="" class="title">lchannng&#39;s blog</a>
+  
+  
+    <nav>
+    
+      <a href="/about/">About</a>
+    
+    </nav>
+  
+</header>
+
+<article>
+  <header>
+    <h1>cpp对象内存布局.md</h1>
+    <time datetime="2019-05-21T19:42:43Z">May 21, 2019</time>
+  </header>
+  <h3 id="前言">前言</h3>
+<p>本文主要是分析一下cpp对象在单继承、多重继承、虚继承下的内存布局，给自己做个笔记&hellip;</p>
+<h3 id="正文">正文</h3>
+<h4 id="0c结构体">0.C结构体</h4>
+<p>先从C结构体说起，内存布局原则：<strong>成员变量按其被声明的顺序排列，按具体实现所规定的对齐原则在内存地址上对齐</strong></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#66d9ef">struct</span> A {
+    <span style="color:#66d9ef">char</span> c;
+    <span style="color:#66d9ef">int</span> n;
+}
+</code></pre></div><p>[图]
+(挖坑待填&hellip;)</p>
+<h4 id="1简单cpp结构">1.简单cpp结构</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">B</span> {
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">int</span> b1;
+<span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">char</span> b2;
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> b3;
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">bf1</span>();
+    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">bf2</span>();
+}
+</code></pre></div><p>(挖坑待填&hellip;)</p>
+<h4 id="2单继承">2.单继承</h4>
+<p>(挖坑待填&hellip;)</p>
+
+</article>
+
+
+
+</html>
