@@ -2,30 +2,30 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>/tags/golang/</loc>
+    <loc>https://example.com/tags/golang/</loc>
     <lastmod>2019-05-16T15:01:58+00:00</lastmod>
   </url><url>
-    <loc>/posts/2019-05-16-go-defer-panic-recover/</loc>
+    <loc>https://example.com/posts/2019-05-16-go-defer-panic-recover/</loc>
     <lastmod>2019-05-16T15:01:58+00:00</lastmod>
   </url><url>
-    <loc>/</loc>
+    <loc>https://example.com/</loc>
     <lastmod>2019-05-16T15:01:58+00:00</lastmod>
   </url><url>
-    <loc>/posts/</loc>
+    <loc>https://example.com/posts/</loc>
     <lastmod>2019-05-16T15:01:58+00:00</lastmod>
   </url><url>
-    <loc>/tags/</loc>
+    <loc>https://example.com/tags/</loc>
     <lastmod>2019-05-16T15:01:58+00:00</lastmod>
   </url><url>
-    <loc>/tags/%E5%A4%87%E5%BF%98/</loc>
+    <loc>https://example.com/tags/%E5%A4%87%E5%BF%98/</loc>
     <lastmod>2019-05-16T15:01:58+00:00</lastmod>
   </url><url>
-    <loc>/tags/mysql/</loc>
+    <loc>https://example.com/tags/mysql/</loc>
     <lastmod>2019-05-14T15:12:15+00:00</lastmod>
   </url><url>
-    <loc>/posts/2019-05-14-installing-mysql-on-windows/</loc>
+    <loc>https://example.com/posts/2019-05-14-installing-mysql-on-windows/</loc>
     <lastmod>2019-05-14T15:12:15+00:00</lastmod>
   </url><url>
-    <loc>/categories/</loc>
+    <loc>https://example.com/categories/</loc>
   </url>
 </urlset>

@@ -2,16 +2,16 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>备忘 on lchannng&#39;s blog</title>
-    <link>/tags/%E5%A4%87%E5%BF%98/</link>
+    <link>https://example.com/tags/%E5%A4%87%E5%BF%98/</link>
     <description>Recent content in 备忘 on lchannng&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Thu, 16 May 2019 15:01:58 +0000</lastBuildDate><atom:link href="/tags/%E5%A4%87%E5%BF%98/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 16 May 2019 15:01:58 +0000</lastBuildDate><atom:link href="https://example.com/tags/%E5%A4%87%E5%BF%98/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>go笔记 defer,panic,recover</title>
-      <link>/posts/2019-05-16-go-defer-panic-recover/</link>
+      <link>https://example.com/posts/2019-05-16-go-defer-panic-recover/</link>
       <pubDate>Thu, 16 May 2019 15:01:58 +0000</pubDate>
       
-      <guid>/posts/2019-05-16-go-defer-panic-recover/</guid>
+      <guid>https://example.com/posts/2019-05-16-go-defer-panic-recover/</guid>
       <description>官方blog传送门：https://blog.golang.org/defer-panic-and-recover
 defer  A defer statement pushes a function call onto a list. The list of saved calls is executed after the surrounding function returns. Defer is commonly used to simplify functions that perform various clean-up actions.
  defer类似cpp在对象在离开作用于后析构，defer可以多次，这样形成一个defer栈，后defer的语句在函数返回时将先被调用。
@@ -20,10 +20,10 @@ func CopyFile(dstName, srcName string) (written int64, err error) { src, err := 
     
     <item>
       <title>Windows下安装mysql</title>
-      <link>/posts/2019-05-14-installing-mysql-on-windows/</link>
+      <link>https://example.com/posts/2019-05-14-installing-mysql-on-windows/</link>
       <pubDate>Tue, 14 May 2019 15:12:15 +0000</pubDate>
       
-      <guid>/posts/2019-05-14-installing-mysql-on-windows/</guid>
+      <guid>https://example.com/posts/2019-05-14-installing-mysql-on-windows/</guid>
       <description>文档传送门(https://dev.mysql.com/doc/refman/8.0/en/windows-installation.html)
 从noinstall ZIP Archive安装
 初始化data目录
