@@ -1,4 +1,4 @@
-baseURL = "https://example.com"
+# baseURL = "https://example.com"
 title = "lchannng's blog"
 # themesDir = "../.."
 themesDir = "./themes"
