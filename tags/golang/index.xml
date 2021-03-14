@@ -1,22 +1,17 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>golang on lchannng&#39;s blog</title>
-    <link>/tags/golang/</link>
-    <description>Recent content in golang on lchannng&#39;s blog</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Thu, 16 May 2019 15:01:58 +0000</lastBuildDate><atom:link href="/tags/golang/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>go笔记 defer,panic,recover</title>
-      <link>/posts/2019-05-16-go-defer-panic-recover/</link>
-      <pubDate>Thu, 16 May 2019 15:01:58 +0000</pubDate>
-      
-      <guid>/posts/2019-05-16-go-defer-panic-recover/</guid>
-      <description>官方blog传送门：https://blog.golang.org/defer-panic-and-recover
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>golang - Tag - lchannng&#39;s blog</title>
+        <link>/tags/golang/</link>
+        <description>golang - Tag - lchannng&#39;s blog</description>
+        <generator>Hugo -- gohugo.io</generator><language>en</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 16 May 2019 15:01:58 &#43;0000</lastBuildDate><atom:link href="/tags/golang/" rel="self" type="application/rss+xml" /><item>
+    <title>go笔记 defer,panic,recover</title>
+    <link>/2019-05-16-go-defer-panic-recover/</link>
+    <pubDate>Thu, 16 May 2019 15:01:58 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>/2019-05-16-go-defer-panic-recover/</guid>
+    <description><![CDATA[官方blog传送门：https://blog.golang.org/defer-panic-and-recover
 defer  A defer statement pushes a function call onto a list. The list of saved calls is executed after the surrounding function returns. Defer is commonly used to simplify functions that perform various clean-up actions.
  defer类似cpp在对象在离开作用于后析构，defer可以多次，这样形成一个defer栈，后defer的语句在函数返回时将先被调用。
-func CopyFile(dstName, srcName string) (written int64, err error) { src, err := os.Open(srcName) if err != nil { return } defer src.Close() dst, err := os.Create(dstName) if err != nil { return } defer dst.</description>
-    </item>
-    
-  </channel>
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15  func CopyFile(dstName, srcName string) (written int64, err error) { src, err := os.Open(srcName) if err !]]></description>
+</item></channel>
 </rss>

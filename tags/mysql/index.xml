@@ -1,24 +1,19 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>mysql on lchannng&#39;s blog</title>
-    <link>/tags/mysql/</link>
-    <description>Recent content in mysql on lchannng&#39;s blog</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 14 May 2019 15:12:15 +0000</lastBuildDate><atom:link href="/tags/mysql/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Windows下安装mysql</title>
-      <link>/posts/2019-05-14-installing-mysql-on-windows/</link>
-      <pubDate>Tue, 14 May 2019 15:12:15 +0000</pubDate>
-      
-      <guid>/posts/2019-05-14-installing-mysql-on-windows/</guid>
-      <description>文档传送门(https://dev.mysql.com/doc/refman/8.0/en/windows-installation.html)
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>mysql - Tag - lchannng&#39;s blog</title>
+        <link>/tags/mysql/</link>
+        <description>mysql - Tag - lchannng&#39;s blog</description>
+        <generator>Hugo -- gohugo.io</generator><language>en</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 14 May 2019 15:12:15 &#43;0000</lastBuildDate><atom:link href="/tags/mysql/" rel="self" type="application/rss+xml" /><item>
+    <title>Windows下安装mysql</title>
+    <link>/2019-05-14-installing-mysql-on-windows/</link>
+    <pubDate>Tue, 14 May 2019 15:12:15 &#43;0000</pubDate>
+    <author>Author</author>
+    <guid>/2019-05-14-installing-mysql-on-windows/</guid>
+    <description><![CDATA[文档传送门(https://dev.mysql.com/doc/refman/8.0/en/windows-installation.html)
 从noinstall ZIP Archive安装
 初始化data目录
-mysqld --initialize --console 登录, 输入随机生成的密码
-mysql -u root -p 修改密码
-ALTER USER &#39;root&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;your-password&#39;; </description>
-    </item>
-    
-  </channel>
+1  mysqld --initialize --console   登录, 输入随机生成的密码
+1  mysql -u root -p   修改密码
+1  ALTER USER &#39;root&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;your-password&#39;;   ]]></description>
+</item></channel>
 </rss>
