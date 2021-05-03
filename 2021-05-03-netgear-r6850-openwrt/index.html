@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>Netgear R6850刷openwrt - lchannng&#39;s blog</title><meta name="Description" content="lchannng&#39;s blog"><meta property="og:title" content="Netgear R6850刷openwrt" />
+<meta property="og:description" content="五一假期不想出去看人山人海，宅在家中，闲来无事更新家里的Netgear R6850路由器的OpenWrt。
+之前已经把路由器刷成OpenWrt固件了，但是当时官方尚未正式支持R6850，所以动手制作了一个snapshot镜像，并刷到机器上。
+最近看到openwrt-21.02.0-rc1已经正式支持R6850了（虽然是rc版本&hellip;&hellip;），so&hellip;搞起来。
+1 制作固件 1.1 环境搭建 由于编译太耗时了，因此选择Image Builder来制作镜像。具体可参照 官方文档。
+为了简化环境搭建、方便后续更新，把Image builder的运行环境封装在Docker镜像中，在Docker中构建OpenWrt镜像
+上次刷OpenWrt的时候已经封装了一些脚本，源码放在lchannng/openwrt-builder。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38  # openwrt-builder/DockerfileFROMdebian:buster-slimMAINTAINERlchannng &lt;lchannng@gmail.com&gt;RUN apt-get update -qq &amp;&amp;\  apt-get install -y \  build-essential \  curl \  file \  gawk \  gettext \  git \  libncurses5-dev \  libssl-dev \  python2." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/2021-05-03-netgear-r6850-openwrt/" /><meta property="og:image" content="/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-05-03T17:31:31&#43;08:00" />
+<meta property="article:modified_time" content="2021-05-03T17:31:31&#43;08:00" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/logo.png"/>
+
+<meta name="twitter:title" content="Netgear R6850刷openwrt"/>
+<meta name="twitter:description" content="五一假期不想出去看人山人海，宅在家中，闲来无事更新家里的Netgear R6850路由器的OpenWrt。
+之前已经把路由器刷成OpenWrt固件了，但是当时官方尚未正式支持R6850，所以动手制作了一个snapshot镜像，并刷到机器上。
+最近看到openwrt-21.02.0-rc1已经正式支持R6850了（虽然是rc版本&hellip;&hellip;），so&hellip;搞起来。
+1 制作固件 1.1 环境搭建 由于编译太耗时了，因此选择Image Builder来制作镜像。具体可参照 官方文档。
+为了简化环境搭建、方便后续更新，把Image builder的运行环境封装在Docker镜像中，在Docker中构建OpenWrt镜像
+上次刷OpenWrt的时候已经封装了一些脚本，源码放在lchannng/openwrt-builder。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38  # openwrt-builder/DockerfileFROMdebian:buster-slimMAINTAINERlchannng &lt;lchannng@gmail.com&gt;RUN apt-get update -qq &amp;&amp;\  apt-get install -y \  build-essential \  curl \  file \  gawk \  gettext \  git \  libncurses5-dev \  libssl-dev \  python2."/>
+<meta name="application-name" content="lchannng&#39;s blog">
+<meta name="apple-mobile-web-app-title" content="lchannng&#39;s blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="/2021-05-03-netgear-r6850-openwrt/" /><link rel="prev" href="/2019-05-16-go-defer-panic-recover/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Netgear R6850刷openwrt",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "\/2021-05-03-netgear-r6850-openwrt\/"
+        },"image": ["\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "openwrt","wordcount":  608 ,
+        "url": "\/2021-05-03-netgear-r6850-openwrt\/","datePublished": "2021-05-03T17:31:31+08:00","dateModified": "2021-05-03T17:31:31+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "lchannng","logo": {
+                    "@type": "ImageObject",
+                    "url": "\/images\/avatar.png",
+                    "width":  738 ,
+                    "height":  738 
+                }},"author": {
+                "@type": "Person",
+                "name": "lchannng"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="lchannng&#39;s blog"><span class="header-title-pre"><i class='far fa-kiss-wink-heart fa-fw'></i></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/tags/"> Tags </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="lchannng&#39;s blog"><span class="header-title-pre"><i class='far fa-kiss-wink-heart fa-fw'></i></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/tags/" title="">Tags</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">Netgear R6850刷openwrt</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>lchannng</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-05-03">2021-05-03</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;608 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;3 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#11-环境搭建"><strong>1.1 环境搭建</strong></a></li>
+    <li><a href="#12-构建-docker-镜像"><strong>1.2 构建 Docker 镜像</strong></a></li>
+    <li><a href="#13-制作-openwrt-镜像"><strong>1.3 制作 OpenWrt 镜像</strong></a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#21-从官方固件刷到-openwrt">2.1 <strong>从官方固件刷到 OpenWrt</strong></a></li>
+    <li><a href="#22-从-openwrt-刷-openwrt">2.2 <strong>从 OpenWrt 刷 OpenWrt</strong></a></li>
+    <li><a href="#23-翻车自救">2.3 翻车自救</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#31-修改默认lan-ip"><strong>3.1 修改默认Lan IP</strong></a></li>
+    <li><a href="#32-ssh-密钥登陆"><strong>3.2 SSH 密钥登陆</strong></a></li>
+    <li><a href="#33-privoxy-配置"><strong>3.3 privoxy 配置</strong></a></li>
+    <li><a href="#34-出国留学"><strong>3.4 出国留学</strong></a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>五一假期不想出去看人山人海，宅在家中，闲来无事更新家里的Netgear R6850路由器的OpenWrt。</p>
+<p>之前已经把路由器刷成OpenWrt固件了，但是当时官方尚未正式支持R6850，所以动手制作了一个snapshot镜像，并刷到机器上。</p>
+<p>最近看到openwrt-21.02.0-rc1已经正式支持R6850了（虽然是rc版本&hellip;&hellip;），so&hellip;搞起来。</p>
+<h1 id="1-制作固件"><strong>1 制作固件</strong></h1>
+<h2 id="11-环境搭建"><strong>1.1 环境搭建</strong></h2>
+<p>由于编译太耗时了，因此选择Image Builder来制作镜像。具体可参照 <a href="https://openwrt.org/docs/guide-user/additional-software/imagebuilder" target="_blank" rel="noopener noreffer">官方文档</a>。</p>
+<p>为了简化环境搭建、方便后续更新，把Image builder的运行环境封装在Docker镜像中，在Docker中构建OpenWrt镜像</p>
+<p>上次刷OpenWrt的时候已经封装了一些脚本，源码放在<a href="https://github.com/lchannng/openwrt-builder" target="_blank" rel="noopener noreffer">lchannng/openwrt-builder</a>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="c"># openwrt-builder/Dockerfile</span><span class="err">
+</span><span class="err">
+</span><span class="err"></span><span class="k">FROM</span><span class="s"> debian:buster-slim</span><span class="err">
+</span><span class="err">
+</span><span class="err"></span><span class="k">MAINTAINER</span><span class="s"> lchannng &lt;lchannng@gmail.com&gt;</span><span class="err">
+</span><span class="err">
+</span><span class="err"></span><span class="k">RUN</span> apt-get update -qq <span class="o">&amp;&amp;</span><span class="se">\
+</span><span class="se"></span>    apt-get install -y <span class="se">\
+</span><span class="se"></span>        build-essential <span class="se">\
+</span><span class="se"></span>        curl <span class="se">\
+</span><span class="se"></span>        file <span class="se">\
+</span><span class="se"></span>        gawk <span class="se">\
+</span><span class="se"></span>        gettext <span class="se">\
+</span><span class="se"></span>        git <span class="se">\
+</span><span class="se"></span>        libncurses5-dev <span class="se">\
+</span><span class="se"></span>        libssl-dev <span class="se">\
+</span><span class="se"></span>        python2.7 <span class="se">\
+</span><span class="se"></span>        python3 <span class="se">\
+</span><span class="se"></span>        rsync <span class="se">\
+</span><span class="se"></span>        subversion <span class="se">\
+</span><span class="se"></span>        sudo <span class="se">\
+</span><span class="se"></span>        swig <span class="se">\
+</span><span class="se"></span>        unzip <span class="se">\
+</span><span class="se"></span>        wget <span class="se">\
+</span><span class="se"></span>        zlib1g-dev <span class="se">\
+</span><span class="se"></span>        <span class="o">&amp;&amp;</span> apt-get -y autoremove <span class="se">\
+</span><span class="se"></span>        <span class="o">&amp;&amp;</span> apt-get clean <span class="se">\
+</span><span class="se"></span>        <span class="o">&amp;&amp;</span> rm -rf /var/lib/apt/lists/*<span class="err">
+</span><span class="err">
+</span><span class="err"></span><span class="k">RUN</span> <span class="nb">echo</span> <span class="s1">&#39;%sudo ALL=(ALL) NOPASSWD:ALL&#39;</span> &gt;&gt; /etc/sudoers<span class="err">
+</span><span class="err"></span><span class="k">RUN</span> useradd -c <span class="s2">&#34;OpenWrt Builder&#34;</span> -m -d /home/build -G sudo -s /bin/bash build<span class="err">
+</span><span class="err">
+</span><span class="err"></span><span class="k">COPY</span> --chown<span class="o">=</span>build:build ./openwrt/ /home/build/openwrt/<span class="err">
+</span><span class="err"></span><span class="k">RUN</span> chown build:build /home/build/openwrt/<span class="err">
+</span><span class="err">
+</span><span class="err"></span><span class="k">USER</span><span class="s"> build</span><span class="err">
+</span><span class="err"></span><span class="k">ENV</span> HOME /home/build<span class="err">
+</span><span class="err"></span><span class="k">WORKDIR</span><span class="s"> /home/build/openwrt</span><span class="err">
+</span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="cp">#!/bin/bash
+</span><span class="cp"></span><span class="c1"># File  : prepare.sh</span>
+<span class="c1"># Author: lchannng &lt;l.channng@gmail.com&gt;</span>
+<span class="c1"># Date  : 2020/08/18 19:24:13</span>
+
+<span class="nv">TAG</span><span class="o">=</span>ijk/openwrt-builder
+
+<span class="nv">OPENWRT_ARCH</span><span class="o">=</span><span class="s2">&#34;</span><span class="si">${</span><span class="nv">OPENWRT_ARCH</span><span class="k">:-</span><span class="nv">ramips</span><span class="si">}</span><span class="s2">&#34;</span>
+<span class="nv">OPENWRT_HOST</span><span class="o">=</span><span class="s2">&#34;</span><span class="si">${</span><span class="nv">OPENWRT_HOST</span><span class="k">:-</span><span class="nv">Linux</span><span class="p">-x86_64</span><span class="si">}</span><span class="s2">&#34;</span>
+<span class="nv">OPENWRT_TARGET</span><span class="o">=</span><span class="s2">&#34;</span><span class="si">${</span><span class="nv">OPENWRT_TARGET</span><span class="k">:-</span><span class="nv">mt7621</span><span class="si">}</span><span class="s2">&#34;</span>
+<span class="nv">OPENWRT_VERSION</span><span class="o">=</span><span class="s2">&#34;</span><span class="si">${</span><span class="nv">OPENWRT_VERSION</span><span class="k">:-</span><span class="nv">19</span><span class="p">.07.3</span><span class="si">}</span><span class="s2">&#34;</span>
+
+<span class="nv">BUILDER_NAME</span><span class="o">=</span><span class="s2">&#34;openwrt-imagebuilder-</span><span class="si">${</span><span class="nv">OPENWRT_VERSION</span><span class="si">}</span><span class="s2">-</span><span class="si">${</span><span class="nv">OPENWRT_ARCH</span><span class="si">}</span><span class="s2">-</span><span class="si">${</span><span class="nv">OPENWRT_TARGET</span><span class="si">}</span><span class="s2">.</span><span class="si">${</span><span class="nv">OPENWRT_HOST</span><span class="si">}</span><span class="s2">&#34;</span>
+<span class="nv">BUILDER_URL</span><span class="o">=</span><span class="s2">&#34;https://downloads.openwrt.org/releases/</span><span class="si">${</span><span class="nv">OPENWRT_VERSION</span><span class="si">}</span><span class="s2">/targets/</span><span class="si">${</span><span class="nv">OPENWRT_ARCH</span><span class="si">}</span><span class="s2">/</span><span class="si">${</span><span class="nv">OPENWRT_TARGET</span><span class="si">}</span><span class="s2">/</span><span class="si">${</span><span class="nv">BUILDER_NAME</span><span class="si">}</span><span class="s2">.tar.xz&#34;</span>
+
+<span class="k">if</span> <span class="o">[</span> ! -f <span class="si">${</span><span class="nv">BUILDER_NAME</span><span class="si">}</span>.tar.xz <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&#34;downloading </span><span class="si">${</span><span class="nv">BUILDER_URL</span><span class="si">}</span><span class="s2">...&#34;</span> <span class="o">&amp;&amp;</span> <span class="se">\
+</span><span class="se"></span>    curl <span class="si">${</span><span class="nv">BUILDER_URL</span><span class="si">}</span> -o <span class="si">${</span><span class="nv">BUILDER_NAME</span><span class="si">}</span>.tar.xz <span class="o">&amp;&amp;</span> <span class="se">\
+</span><span class="se"></span>    tar xvf <span class="si">${</span><span class="nv">BUILDER_NAME</span><span class="si">}</span>.tar.xz
+<span class="k">fi</span>
+
+ln -snf <span class="si">${</span><span class="nv">BUILDER_NAME</span><span class="si">}</span> openwrt
+docker build -t <span class="si">${</span><span class="nv">TAG</span><span class="si">}</span> .
+</code></pre></td></tr></table>
+</div>
+</div><p>这两个脚本做的事情很简单，仅仅是把我们需要的版本下载回来，并解压到 openwrt 目录，构建Docker镜像的时候，把 openwrt 目录拷贝到镜像的 /home/build/openwrt 目录。</p>
+<h2 id="12-构建-docker-镜像"><strong>1.2 构建 Docker 镜像</strong></h2>
+<p>把 <a href="https://github.com/lchannng/openwrt-builder" target="_blank" rel="noopener noreffer">openwrt-builder</a> 拉下来后，修改 build.sh 中填写的 OpenWrt 架构、版本等信息。</p>
+<p>本次使用 openwrt-21.02.0-rc1，修改 OPENWRT_VERSION 如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="nv">OPENWRT_VERSION</span><span class="o">=</span><span class="s2">&#34;</span><span class="si">${</span><span class="nv">OPENWRT_VERSION</span><span class="k">:-</span><span class="nv">21</span><span class="p">.02.0-rc1</span><span class="si">}</span><span class="s2">&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>修改完毕后，无脑执行 build.sh 构建 Docker 镜像，完成后可得镜像 ijk/openwrt-builder。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ docker images
+
+REPOSITORY            TAG       IMAGE ID       CREATED        SIZE
+ijk/openwrt-builder   latest    2f82e3b0ca31   <span class="m">20</span> hours ago   919MB
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="13-制作-openwrt-镜像"><strong>1.3 制作 OpenWrt 镜像</strong></h2>
+<p>启动Image Builder</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"> $ docker run -it -v ~/openwrt-builder/bin:/home/build/openwrt/bin ijk/openwrt-builder
+</code></pre></td></tr></table>
+</div>
+</div><p>这里把宿主机的~/openwrt-builder/bin映射到Docker容器的/home/build/openwrt/bin目录，这个目录是 OpenWrt 镜像的输出目录。</p>
+<p>构建镜像, PROFILE选择&quot;netgear_R6850&quot;，额外的包只增加luci。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ <span class="nb">cd</span> /home/build/openwrt
+$ make image <span class="nv">PROFILE</span><span class="o">=</span><span class="s2">&#34;netgear_R6850&#34;</span> <span class="nv">PACKAGES</span><span class="o">=</span><span class="s2">&#34;luci&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>如无意外，等待几分钟后，在 /home/build/openwrt/bin/targets (宿主机下的 ~/openwrt-builder/bin/targets 目录) 中可以找到成功输出的镜像。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ ls -R /home/build/openwrt/bin/targets/
+
+/home/build/openwrt/bin/targets/:
+ramips
+
+/home/build/openwrt/bin/targets/ramips:
+mt7621
+
+/home/build/openwrt/bin/targets/ramips/mt7621:
+openwrt-21.02.0-rc1-ramips-mt7621-netgear_r6850-squashfs-factory.img
+openwrt-21.02.0-rc1-ramips-mt7621-netgear_r6850-squashfs-kernel.bin
+openwrt-21.02.0-rc1-ramips-mt7621-netgear_r6850-squashfs-rootfs.bin
+openwrt-21.02.0-rc1-ramips-mt7621-netgear_r6850-squashfs-sysupgrade.bin
+openwrt-21.02.0-rc1-ramips-mt7621-netgear_r6850.manifest
+profiles.json
+sha256sums
+</code></pre></td></tr></table>
+</div>
+</div><h1 id="2-刷机"><strong>2 刷机</strong></h1>
+<h2 id="21-从官方固件刷到-openwrt">2.1 <strong>从官方固件刷到 OpenWrt</strong></h2>
+<p>如果路由器还是 Netgear 官方固件，可以登陆管理页面，通过管理页面的更新固件入口，上传 OpenWrt 固件进行更新。比较无脑，不做详细描述。等待几分钟后，通过网线连接 lan 口尝试连接路由器并登陆 192.168.1.1 进行配置。</p>
+<h2 id="22-从-openwrt-刷-openwrt">2.2 <strong>从 OpenWrt 刷 OpenWrt</strong></h2>
+<p>如果路由器还能登陆到管理页面，可以在 System - Backup / Flash firmware 来进行刷机。</p>
+<p>此外可以通过 <a href="https://github.com/jclehner/nmrpflash" target="_blank" rel="noopener noreffer">nmrpflash</a> 进行刷机。</p>
+<blockquote>
+<p><code>nmrpflash</code> uses Netgear&rsquo;s <a href="http://www.chubb.wattle.id.au/PeterChubb/nmrp.html" target="_blank" rel="noopener noreffer">NMRP protocol</a> to flash a new firmware image to a compatible device. It has been successfully used on a Netgear EX2700, EX6100v2, EX6120, EX6150v2, DNG3700v2, R6100, R6220, R7000, D7000, WNR3500, R6080, R6400 and R6800, R8000, R8500, WNDR3800, but is likely to be compatible with many other Netgear devices.</p>
+</blockquote>
+<p>具体操作如下：</p>
+<ol>
+<li>拔掉所有无关网线、无线网卡</li>
+<li>使用网线连接到路由器 lan 口</li>
+<li>将连接路由器的网卡 ip 设置为 192.168.1.2，子网掩码为255.255.255.0，默认网关 192.168.1.1 (网上大多数教程都是这么说的，暂时没看到官方资料有相关描述，但是不这么设置貌似刷不了机)</li>
+<li>关闭路由器电源</li>
+<li>运行 nmrpflash -i <interface> -f &lt;openwrt-xxx.img&gt;</li>
+<li>打开路由器电源，等待路由器 NMRP 握手并执行更新，如果一直连不上，重复 4 - 6 步骤</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># 查看网络接口</span>
+$ nmrpflash -L
+
+eth0  192.168.1.2    33:c6:47:28:70:95
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># 运行nmrpflash，指定网口和OpenWrt镜像</span>
+$ nmrpflash -i eth0 -f openwrt-21.02.0-rc1-ramips-mt7621-netgear_r6850-squashfs-factory.img
+
+Waiting <span class="k">for</span> physical connection.
+Advertising NMRP server on net14 ... /
+Received configuration request from 78:d2:94:81:6a:cf.
+Sending configuration: 10.164.183.252/24.
+Received upload request without filename.
+Uploading openwrt-21.02.0-rc1-ramips-mt7621-netgear_r6850-squashfs-factory.img ... OK
+Waiting <span class="k">for</span> remote to respond.
+Received keep-alive request <span class="o">(</span>2<span class="o">)</span>.
+Remote finished. Closing connection.
+Reboot your device now.
+
+</code></pre></td></tr></table>
+</div>
+</div><p>等待几分钟，直到出现”Reboot your device now.“ 后，重启路由器，并使用网线连接到路由器 lan 口，登陆 192.168.1.1 设置路由器。</p>
+<h2 id="23-翻车自救">2.3 翻车自救</h2>
+<p>翻车嘛，在所难免&hellip;&hellip;</p>
+<p>翻车不可怕，只要nmrp没坏，还是有救的，具体可参照 2.2 中 nmrpflash 刷机步骤进行重刷。</p>
+<p>也可以通过 nmrpflash 重新刷回官方固件(辣鸡官方固件，应该没人会刷回去&hellip;&hellip;)。</p>
+<h1 id="3-openwrt-后续配置">3 OpenWrt 后续配置</h1>
+<h2 id="31-修改默认lan-ip"><strong>3.1 修改默认Lan IP</strong></h2>
+<p>openwrt 默认lan IP 是 192.168.1.1，与光猫冲突了，改成别的地址</p>
+<p>ssh到路由器</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ uci <span class="nb">set</span> network.lan.ipaddr<span class="o">=</span>192.168.111.1
+$ uci commit <span class="o">&amp;&amp;</span> service network restart
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="32-ssh-密钥登陆"><strong>3.2 SSH 密钥登陆</strong></h2>
+<p>参考官方文档 <a href="https://openwrt.org/docs/guide-user/security/dropbear.public-key.auth" target="_blank" rel="noopener noreffer">Dropbear key-based authentication</a></p>
+<p>root用户需要把公钥放到 /etc/dropbear/authorized_keys</p>
+<h2 id="33-privoxy-配置"><strong>3.3 privoxy 配置</strong></h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback"># /etc/config/privoxy
+
+config	privoxy	&#39;privoxy&#39;
+	option	confdir		&#39;/etc/privoxy&#39;
+	option	logdir		&#39;/var/log&#39;
+	option	logfile		&#39;privoxy.log&#39;
+        list listen_address	&#39;192.168.111.1:8118&#39;
+        option  forward_socks5  &#39;/ 192.168.111.1:65530 .&#39;
+
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="34-出国留学"><strong>3.4 出国留学</strong></h2>
+<p>使用自用的magic协议，这里不可描述，略过。</p>
+<p>此外还要配置pac文件。</p>
+<p>使用工具生产pac文件，代理地址为PROXY 192.168.111.1:8118，并把该文件放到路由器的/www/xxx.pac</p>
+<p>在手机上把pac地址配置为 http://192.168.111.1/xxx.pac</p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2021-05-03</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/openwrt/">openwrt</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/2019-05-16-go-defer-panic-recover/" class="prev" rel="prev" title="go笔记 defer,panic,recover"><i class="fas fa-angle-left fa-fw"></i>go笔记 defer,panic,recover</a></div>
+</div>
+<div id="comments"></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.83.1">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2021</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">lchannng</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/copy-tex.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":1000},"comment":{},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>
