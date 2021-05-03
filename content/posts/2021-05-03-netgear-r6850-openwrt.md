@@ -1,6 +1,6 @@
 ---
-title: 	Netgear R6850刷openwrt
-date: 2021-05-03 17:31:31
+title: Netgear R6850刷openwrt
+date: 2021-05-03 17:31:31+0800
 tags:
     - openwrt
 ---
@@ -255,7 +255,7 @@ config	privoxy	'privoxy'
 	option	logdir		'/var/log'
 	option	logfile		'privoxy.log'
         list listen_address	'192.168.111.1:8118'
-        option  forward_socks5  '/ 192.168.111.1:8000 .'
+        option  forward_socks5  '/ 192.168.111.1:65530 .'
 
 ```
 
@@ -267,6 +267,6 @@ config	privoxy	'privoxy'
 
 此外还要配置pac文件。
 
-使用工具生产pac文件，并把该文件放到路由器的/www/xxx.pac
+使用工具生产pac文件，代理地址为PROXY 192.168.111.1:8118，并把该文件放到路由器的/www/xxx.pac
 
 在手机上把pac地址配置为 http://192.168.111.1/xxx.pac
