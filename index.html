@@ -75,6 +75,15 @@
         alt="/images/avatar.png"
         title="/images/avatar.png" /></a></div><h2 class="home-subtitle"><div id="id-1" class="typeit"></div></h2><div class="links"><a href="https://github.com/lchannng" title="GitHub" target="_blank" rel="noopener noreffer me"><i class="fab fa-github-alt fa-fw"></i></a><a href="mailto:lchannng@gmail.com" title="Email" rel=" me"><i class="far fa-envelope fa-fw"></i></a></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/2021-05-05-openwrt-dns-configuration/">openwrt dns 配置</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>lchannng</a></span>&nbsp;<span class="post-publish">published on <time datetime="2021-05-05">2021-05-05</time></span></div><div class="content">安装依赖 自带的dnsmasq 不支持 ipset，需要安装 dnsmasq-full 才能支持所有功能，安装前先删除原来的 dnsmasq
+1  $ opkg install dnsmasq-full ipset   配置dnsmasq 创建 dnsmasq.d 目录
+1  $ mkdir /etc/dnsmasq.d   在 /etc/dnsmasq.conf 末尾增加 conf-dir
+1 2 3 4  ... # include /etc/dnsmasq.d conf-dir=/etc/dnsmasq.d/,*.conf   配置 DNS 服务器 新建文件/etc/dnsmasq.d/dns.conf
+1 2 3 4 5  # ignore /etc/resolv.conf no-resolv server=119.29.29.29 server=223.5.5.5   ipset 配置 dnsmasq 在 2.66 版之后加入了对 ipset 的支持，可将指定域名的 IP 解析后自动加入某一 ipset 中，可以结合魔法使用。</div><div class="post-footer">
+        <a href="/2021-05-05-openwrt-dns-configuration/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/openwrt/">openwrt</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/2021-05-03-netgear-r6850-openwrt/">Netgear R6850刷openwrt</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>lchannng</a></span>&nbsp;<span class="post-publish">published on <time datetime="2021-05-03">2021-05-03</time></span></div><div class="content">五一假期不想出去看人山人海，宅在家中，闲来无事更新家里的Netgear R6850路由器的OpenWrt。
 之前已经把路由器刷成OpenWrt固件了，但是当时官方尚未正式支持R6850，所以动手制作了一个snapshot镜像，并刷到机器上。

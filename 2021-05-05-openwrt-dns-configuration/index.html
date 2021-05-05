@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>openwrt dns 配置 - lchannng&#39;s blog</title><meta name="Description" content="lchannng&#39;s blog"><meta property="og:title" content="openwrt dns 配置" />
+<meta property="og:description" content="安装依赖 自带的dnsmasq 不支持 ipset，需要安装 dnsmasq-full 才能支持所有功能，安装前先删除原来的 dnsmasq
+1  $ opkg install dnsmasq-full ipset   配置dnsmasq 创建 dnsmasq.d 目录
+1  $ mkdir /etc/dnsmasq.d   在 /etc/dnsmasq.conf 末尾增加 conf-dir
+1 2 3 4  ... # include /etc/dnsmasq.d conf-dir=/etc/dnsmasq.d/,*.conf   配置 DNS 服务器 新建文件/etc/dnsmasq.d/dns.conf
+1 2 3 4 5  # ignore /etc/resolv.conf no-resolv server=119.29.29.29 server=223.5.5.5   ipset 配置 dnsmasq 在 2.66 版之后加入了对 ipset 的支持，可将指定域名的 IP 解析后自动加入某一 ipset 中，可以结合魔法使用。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/2021-05-05-openwrt-dns-configuration/" /><meta property="og:image" content="/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-05-05T18:08:44&#43;08:00" />
+<meta property="article:modified_time" content="2021-05-05T18:08:44&#43;08:00" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/logo.png"/>
+
+<meta name="twitter:title" content="openwrt dns 配置"/>
+<meta name="twitter:description" content="安装依赖 自带的dnsmasq 不支持 ipset，需要安装 dnsmasq-full 才能支持所有功能，安装前先删除原来的 dnsmasq
+1  $ opkg install dnsmasq-full ipset   配置dnsmasq 创建 dnsmasq.d 目录
+1  $ mkdir /etc/dnsmasq.d   在 /etc/dnsmasq.conf 末尾增加 conf-dir
+1 2 3 4  ... # include /etc/dnsmasq.d conf-dir=/etc/dnsmasq.d/,*.conf   配置 DNS 服务器 新建文件/etc/dnsmasq.d/dns.conf
+1 2 3 4 5  # ignore /etc/resolv.conf no-resolv server=119.29.29.29 server=223.5.5.5   ipset 配置 dnsmasq 在 2.66 版之后加入了对 ipset 的支持，可将指定域名的 IP 解析后自动加入某一 ipset 中，可以结合魔法使用。"/>
+<meta name="application-name" content="lchannng&#39;s blog">
+<meta name="apple-mobile-web-app-title" content="lchannng&#39;s blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="/2021-05-05-openwrt-dns-configuration/" /><link rel="prev" href="/2021-05-03-netgear-r6850-openwrt/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "openwrt dns 配置",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "\/2021-05-05-openwrt-dns-configuration\/"
+        },"image": ["\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "openwrt","wordcount":  110 ,
+        "url": "\/2021-05-05-openwrt-dns-configuration\/","datePublished": "2021-05-05T18:08:44+08:00","dateModified": "2021-05-05T18:08:44+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "lchannng","logo": {
+                    "@type": "ImageObject",
+                    "url": "\/images\/avatar.png",
+                    "width":  738 ,
+                    "height":  738 
+                }},"author": {
+                "@type": "Person",
+                "name": "lchannng"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="lchannng&#39;s blog"><span class="header-title-pre"><i class='far fa-kiss-wink-heart fa-fw'></i></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/tags/"> Tags </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="lchannng&#39;s blog"><span class="header-title-pre"><i class='far fa-kiss-wink-heart fa-fw'></i></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/tags/" title="">Tags</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">openwrt dns 配置</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>lchannng</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-05-05">2021-05-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;110 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;One minute&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#安装依赖">安装依赖</a></li>
+    <li><a href="#配置dnsmasq">配置dnsmasq</a></li>
+    <li><a href="#配置-dns-服务器">配置 DNS 服务器</a></li>
+    <li><a href="#ipset-配置">ipset 配置</a></li>
+    <li><a href="#最后">最后</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h2 id="安装依赖">安装依赖</h2>
+<p>自带的dnsmasq 不支持 ipset，需要安装 dnsmasq-full 才能支持所有功能，安装前先删除原来的 dnsmasq</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ opkg install dnsmasq-full ipset
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="配置dnsmasq">配置dnsmasq</h2>
+<p>创建 dnsmasq.d 目录</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ mkdir /etc/dnsmasq.d
+</code></pre></td></tr></table>
+</div>
+</div><p>在 /etc/dnsmasq.conf 末尾增加 conf-dir</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">...
+
+# include /etc/dnsmasq.d
+conf-dir=/etc/dnsmasq.d/,*.conf
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="配置-dns-服务器">配置 DNS 服务器</h2>
+<p>新建文件/etc/dnsmasq.d/dns.conf</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback"># ignore /etc/resolv.conf
+no-resolv
+
+server=119.29.29.29
+server=223.5.5.5
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="ipset-配置">ipset 配置</h2>
+<p>dnsmasq 在 2.66 版之后加入了对 ipset 的支持，可将指定域名的 IP 解析后自动加入某一 ipset 中，可以结合魔法使用。</p>
+<p>通过工具生成 dnsmasq 转换 ipset 规则：<a href="https://github.com/lchannng/gfwlist2dnsmasq" target="_blank" rel="noopener noreffer">传送门</a></p>
+<p>生成文件放到/etc/dnsmasq.d/xxx.conf</p>
+<p>由于上面已经配置好了一个相对可靠的 dns 服务器，xxx.conf 中可以去掉针对特定域名的配置特定的 dns 服务器</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># 仅保留 ipset 配置</span>
+$ cat /etc/dnsmasq.d/xxx.conf <span class="p">|</span> grep ipset &gt; /etc/dnsmasq.d/xxx.conf
+</code></pre></td></tr></table>
+</div>
+</div><p>/etc/rc.local</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">...
+# 启动后自动创建xxx集合
+ipset create xxx hash:ip
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="最后">最后</h2>
+<p>重启 dnsmasq</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">$ /etc/init.d/dnsmasq restart
+</code></pre></td></tr></table>
+</div>
+</div><p>测试域名解析</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ nslookup openwrt.org
+</code></pre></td></tr></table>
+</div>
+</div></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2021-05-05</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/openwrt/">openwrt</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/2021-05-03-netgear-r6850-openwrt/" class="prev" rel="prev" title="Netgear R6850刷openwrt"><i class="fas fa-angle-left fa-fw"></i>Netgear R6850刷openwrt</a></div>
+</div>
+<div id="comments"></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.83.1">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2021</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">lchannng</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/copy-tex.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":1000},"comment":{},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

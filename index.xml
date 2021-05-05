@@ -3,9 +3,20 @@
         <title>lchannng&#39;s blog</title>
         <link>/</link>
         <description>lchannng&#39;s blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>en</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 03 May 2021 17:31:31 &#43;0800</lastBuildDate>
+        <generator>Hugo -- gohugo.io</generator><language>en</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 05 May 2021 18:08:44 &#43;0800</lastBuildDate>
             <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>openwrt dns 配置</title>
+    <link>/2021-05-05-openwrt-dns-configuration/</link>
+    <pubDate>Wed, 05 May 2021 18:08:44 &#43;0800</pubDate>
+    <author>Author</author>
+    <guid>/2021-05-05-openwrt-dns-configuration/</guid>
+    <description><![CDATA[安装依赖 自带的dnsmasq 不支持 ipset，需要安装 dnsmasq-full 才能支持所有功能，安装前先删除原来的 dnsmasq
+1  $ opkg install dnsmasq-full ipset   配置dnsmasq 创建 dnsmasq.d 目录
+1  $ mkdir /etc/dnsmasq.d   在 /etc/dnsmasq.conf 末尾增加 conf-dir
+1 2 3 4  ... # include /etc/dnsmasq.d conf-dir=/etc/dnsmasq.d/,*.conf   配置 DNS 服务器 新建文件/etc/dnsmasq.d/dns.conf
+1 2 3 4 5  # ignore /etc/resolv.conf no-resolv server=119.29.29.29 server=223.5.5.5   ipset 配置 dnsmasq 在 2.66 版之后加入了对 ipset 的支持，可将指定域名的 IP 解析后自动加入某一 ipset 中，可以结合魔法使用。]]></description>
+</item><item>
     <title>Netgear R6850刷openwrt</title>
     <link>/2021-05-03-netgear-r6850-openwrt/</link>
     <pubDate>Mon, 03 May 2021 17:31:31 &#43;0800</pubDate>
