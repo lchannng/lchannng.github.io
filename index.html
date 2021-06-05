@@ -75,6 +75,23 @@
         alt="/images/avatar.png"
         title="/images/avatar.png" /></a></div><h2 class="home-subtitle"><div id="id-1" class="typeit"></div></h2><div class="links"><a href="https://github.com/lchannng" title="GitHub" target="_blank" rel="noopener noreffer me"><i class="fab fa-github-alt fa-fw"></i></a><a href="mailto:lchannng@gmail.com" title="Email" rel=" me"><i class="far fa-envelope fa-fw"></i></a></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/2021-06-05-rpi-magic/">树莓派折腾笔记：通过iptables &#43; dnsmasq &#43; magic开启魔法</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>lchannng</a></span>&nbsp;<span class="post-publish">published on <time datetime="2021-06-05">2021-06-05</time></span></div><div class="content">喂！三点几啦，饮茶先啦&hellip;
+接着上一篇，这次要在树莓派上部署一下魔法。
+大体的思路是在本地开启一个透明代理，通过iptables把某些神秘地址转发到透明代理，由透明代理发到一个跳板机器上。
+由于使用了透明代理，本地的应用不知道有代理的存在，会提前进行dns解析，神秘地址会被定向到一些不存在的ip上，要想拿到正确的ip，神秘地址的dns解析请求要通过安全的方式进行，比如tls、https，可以使用cloudflare的dns服务器。
+准备 上一篇已经把dnsmasq装上了，这次剩下需要用到的工具安排上。
+1  $ apt install ipset netfilter-persistent iptables-persistent   ipset是iptables 的一个协助工具，用来维护特定的ip集合，iptables可以对这些集合进行屏蔽、转发。
+netfilter-persistent、iptables-persistent主要用来持久化iptables规则和开机自动恢复。
+ipset 配置 ipset作用 需要创建三个ipset：reserved、china、magic
+reserved: 保留地址，需要跳过发到这些地址的流量
+china：大局域网内部所有地址，需要跳过发到这些地址的流量
+maigc：跳板机的地址，需要跳过发到这些地址的流量
+ipset配置文件 创建 /etc/ipset.d目录，并创建ipset配置文件：reserved.conf，magic.conf，china.conf
+1 2 3 4 5 6 7 8 9 10 11 12 13  # /etc/ipset.d/reserved.conf create reserved hash:net family inet hashsize 256 maxelem 1024 add reserved 0.0.0.0/8 add reserved 10.0.0.0/8 add reserved 100.64.0.0/10 add reserved 127.0.0.0/8 add reserved 169.254.0.0/16 add reserved 172.</div><div class="post-footer">
+        <a href="/2021-06-05-rpi-magic/">Read More</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/iptables/">iptables</a>,&nbsp;<a href="/tags/dnsmasq/">dnsmasq</a>,&nbsp;<a href="/tags/%E6%A0%91%E8%8E%93%E6%B4%BE/">树莓派</a>,&nbsp;<a href="/tags/raspberry-pi/">raspberry pi</a>,&nbsp;<a href="/tags/%E9%80%8F%E6%98%8E%E4%BB%A3%E7%90%86/">透明代理</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/2021-05-30-rpi-wifi/">树莓派折腾笔记：开启WiFi热点</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>lchannng</a></span>&nbsp;<span class="post-publish">published on <time datetime="2021-05-30">2021-05-30</time></span></div><div class="content">概述 印度养蛊，传进来了&hellip;
 由于疫情宅在家，闲来无事折腾下手上的树莓派4B，先用hostapd + dnsmasq搭一个热点，后面再把一些魔法搞起来。
