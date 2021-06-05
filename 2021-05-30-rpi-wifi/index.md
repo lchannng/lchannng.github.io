@@ -1,0 +1,128 @@
+# 树莓派折腾笔记：开启WiFi热点
+
+
+## 概述
+
+印度养蛊，传进来了...
+
+由于疫情宅在家，闲来无事折腾下手上的树莓派4B，先用hostapd + dnsmasq搭一个热点，后面再把一些魔法搞起来。
+
+## 准备
+
+之前已经给rpi装了ubuntu server 20.04，现在把一些软件装上。
+
+```shell
+# apt install hostapd dnsmasq
+```
+
+## 增加网桥
+
+以桥接的方式接入树莓派的无线网卡wlan0。
+
+ubuntu server 20.04可以通过netplan修改网络配置，netplan是基于systemd-networkd的，没有netplan可以直接修改systemd-networkd配置。非systemd的系统自行使用bridge-utils自行增加网桥。
+
+修改/etc/netplan/50-cloud-init.yaml文件
+
+```
+network:
+    ethernets:
+        eth0:
+            dhcp4: true
+            optional: true
+    bridges:
+        brlan:
+            dhcp4: false
+            addresses: [ 172.17.0.1/24 ]
+    version: 2
+
+```
+
+新增bridges这段配置，网桥名字为brlan，关掉dhcp，改成静态地址172.17.0.1/24。
+
+## hostapd配置
+
+修改/etc/hostapd/hostapd.conf
+
+```
+interface=wlan0  # 指定网卡
+bridge=brlan     # 桥接到brlan
+ssid=[wifi名称]
+macaddr_acl=0
+ignore_broadcast_ssid=0
+auth_algs=1
+wpa=2
+wpa_passphrase=[wifi密码]
+wpa_key_mgmt=WPA-PSK
+wpa_pairwise=TKIP
+rsn_pairwise=CCMP
+
+
+## 5G  (树莓派的无线网卡过于辣鸡，5G隔墙就没了，还是开2.4G吧)
+# hw_mode=a
+# channel=149
+# country_code=CN
+# ieee80211d=1
+# ieee80211ac=1
+# wmm_enabled=1
+
+## 2.4G
+hw_mode=g
+channel=11
+ieee80211n=1
+
+```
+
+## dnsmasq配置
+
+增加一个配置文件 /etc/dnsmasq.d/hostapd.conf
+
+```
+interface=brlan  # 指定dhcp的接口为网桥
+dhcp-range=172.17.0.100,172.17.0.250,255.255.255.0,12h  # 动态ip范围
+dhcp-option=3,172.17.0.1  # 网关是网桥的地址
+```
+
+
+
+## 运行
+
+开机启动
+
+```shell
+# systemctl enable dnsmasq
+# systemctl enable hostapd
+```
+
+
+
+重启服务，刷新配置
+
+```shell
+# systemctl restart dnsmasq
+# systemctl restart hostapd
+```
+
+
+
+查看日志
+
+```shell
+# journalctl -f -u hostapd
+
+May 30 10:35:31 rpi-4b systemd[1]: Starting Advanced IEEE 802.11 AP and IEEE 802.1X/WPA/WPA2/EAP Authenticator...
+May 30 10:35:32 rpi-4b hostapd[1683]: Configuration file: /etc/hostapd/hostapd.conf
+May 30 10:35:32 rpi-4b hostapd[1683]: Using interface wlan0 with hwaddr e4:5f:01:20:e2:dd and ssid "[wifi名称]"
+May 30 10:35:32 rpi-4b hostapd[1683]: wlan0: interface state UNINITIALIZED->ENABLED
+May 30 10:35:32 rpi-4b hostapd[1683]: wlan0: AP-ENABLED
+May 30 10:35:32 rpi-4b systemd[1]: Started Advanced IEEE 802.11 AP and IEEE 802.1X/WPA/WPA2/EAP Authenticator.
+```
+
+
+
+没报错，且能见到这一行，基本就ojbk了
+
+```
+Using interface wlan0 with hwaddr e4:5f:01:20:e2:dd and ssid xxx
+```
+
+
