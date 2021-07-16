@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>MongoDB杂谈 - lchannng&#39;s blog</title><meta name="Description" content="lchannng&#39;s blog"><meta property="og:title" content="MongoDB杂谈" />
+<meta property="og:description" content="1 序 前一段时间疫情爆发，周末宅家里闲来无事，写点小玩具，期间使用并稍微深入学习了一下 MongoDB 。
+本文主要记录一下在学习、使用 MongoDB 过程中遇到的一些问题和学到的一些姿势。
+2 Objectid 2.1 数据结构 在 MongoDB 中，集合中每个文档都需要一个 唯一的 _id 字段作为主键，如果插入的文档没有 _id 字段， MongoDB 会自动生成一个 ObjectId 作为 _id。
+ObjectId是一个12字节 BSON 类型数据，最初的数据格式如下：
+  a 4-byte value representing the seconds since the Unix epoch (which will not run out of seconds until the year 2106) a 3-byte machine identifier (usually derived from the MAC address), a 2-byte process id, and a 3-byte counter, starting with a random value." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/2021-07-14-by-talk-of-mongodb/" /><meta property="og:image" content="/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-07-15T21:06:43+08:00" />
+<meta property="article:modified_time" content="2021-07-15T21:06:43+08:00" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/logo.png"/>
+
+<meta name="twitter:title" content="MongoDB杂谈"/>
+<meta name="twitter:description" content="1 序 前一段时间疫情爆发，周末宅家里闲来无事，写点小玩具，期间使用并稍微深入学习了一下 MongoDB 。
+本文主要记录一下在学习、使用 MongoDB 过程中遇到的一些问题和学到的一些姿势。
+2 Objectid 2.1 数据结构 在 MongoDB 中，集合中每个文档都需要一个 唯一的 _id 字段作为主键，如果插入的文档没有 _id 字段， MongoDB 会自动生成一个 ObjectId 作为 _id。
+ObjectId是一个12字节 BSON 类型数据，最初的数据格式如下：
+  a 4-byte value representing the seconds since the Unix epoch (which will not run out of seconds until the year 2106) a 3-byte machine identifier (usually derived from the MAC address), a 2-byte process id, and a 3-byte counter, starting with a random value."/>
+<meta name="application-name" content="lchannng&#39;s blog">
+<meta name="apple-mobile-web-app-title" content="lchannng&#39;s blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="/2021-07-14-by-talk-of-mongodb/" /><link rel="prev" href="/2021-06-05-rpi-magic/" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "MongoDB杂谈",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "\/2021-07-14-by-talk-of-mongodb\/"
+        },"image": ["\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "MongoDB","wordcount":  1305 ,
+        "url": "\/2021-07-14-by-talk-of-mongodb\/","datePublished": "2021-07-15T21:06:43+08:00","dateModified": "2021-07-15T21:06:43+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "lchannng","logo": {
+                    "@type": "ImageObject",
+                    "url": "\/images\/avatar.png",
+                    "width":  738 ,
+                    "height":  738 
+                }},"author": {
+                "@type": "Person",
+                "name": "lchannng"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="lchannng&#39;s blog"><span class="header-title-pre"><i class='far fa-kiss-wink-heart fa-fw'></i></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/tags/"> Tags </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="lchannng&#39;s blog"><span class="header-title-pre"><i class='far fa-kiss-wink-heart fa-fw'></i></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/tags/" title="">Tags</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">MongoDB杂谈</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>lchannng</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-07-15">2021-07-15</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1305 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;7 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-序">1 序</a></li>
+    <li><a href="#2-objectid">2 Objectid</a>
+      <ul>
+        <li><a href="#21-数据结构">2.1 数据结构</a></li>
+        <li><a href="#22-driver实现">2.2 driver实现</a></li>
+        <li><a href="#23-真的唯一吗">2.3 真的唯一吗</a></li>
+        <li><a href="#24-其他唯一id生成方案">2.4 其他唯一ID生成方案</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-ttl索引">3 TTL索引</a></li>
+    <li><a href="#4-mongodb-wire-protocol">4 MongoDB Wire Protocol</a></li>
+    <li><a href="#5-附录">5 附录</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h2 id="1-序">1 序</h2>
+<p>前一段时间疫情爆发，周末宅家里闲来无事，写点小玩具，期间使用并稍微深入学习了一下 MongoDB 。</p>
+<p>本文主要记录一下在学习、使用 MongoDB 过程中遇到的一些问题和学到的一些姿势。</p>
+<h2 id="2-objectid">2 Objectid</h2>
+<h3 id="21-数据结构">2.1 数据结构</h3>
+<p>在 MongoDB 中，集合中每个文档都需要一个 唯一的 _id 字段作为主键，如果插入的文档没有 _id 字段， MongoDB 会自动生成一个 ObjectId 作为 _id。</p>
+<p>ObjectId是一个12字节 BSON 类型数据，最初的数据格式如下：</p>
+<blockquote>
+<ul>
+<li>a 4-byte value representing the seconds since the Unix epoch (which will not run out of seconds until the year 2106)</li>
+<li>a 3-byte machine identifier (usually derived from the MAC address),</li>
+<li>a 2-byte process id, and</li>
+<li>a 3-byte counter, starting with a random value.</li>
+</ul>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">timestamp(big endian)  machine hash    pid        counter
+|&lt;-----------------&gt;|&lt;------------&gt;|&lt;-------&gt;|&lt;------------&gt;|
+[----|----|----|----|----|----|----|----|----|----|----|----]
+0                   4                   8                   12
+</code></pre></td></tr></table>
+</div>
+</div><p>在 MongoDB 最新版本中，ObjectId 的格式有所变化：</p>
+<blockquote>
+<ul>
+<li>a 4-byte <em>timestamp value</em>, representing the ObjectId&rsquo;s creation, measured in seconds since the Unix epoch</li>
+<li>a 5-byte <em>random value</em></li>
+<li>a 3-byte <em>incrementing counter</em>, initialized to a random value</li>
+</ul>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">timestamp(big endian)   process unique data      counter
+|&lt;-----------------&gt;|&lt;----------------------&gt;|&lt;------------&gt;|
+[----|----|----|----|----|----|----|----|----|----|----|----]
+0                   4                   8                   12
+</code></pre></td></tr></table>
+</div>
+</div><p>如上所示，主要变化在中间5个字节的，由原来的 3字节机器名称hash + 2字节进程id改为 5字节随机值，官方driver里面的描述是 system/process unique data。</p>
+<p>这个改动的原因可以在 MongoDB 的<a href="https://github.com/mongodb/specifications/blob/master/source/objectid.rst#random-value" target="_blank" rel="noopener noreffer">特性设计文档</a>中找到:</p>
+<blockquote>
+<p><strong>Random Value:</strong> Originally, this field consisted of the Machine ID and Process ID fields. There were numerous divergences between drivers due to implementation choices, and the Machine ID field traditionally used the MD5 hashing algorithm which can&rsquo;t be used on FIPS compliant machines. In order to allow for a similar behaviour among all drivers <strong>and</strong> the MongoDB Server, these two fields have been collated together into a single 5-byte random value, unique to a machine and process.</p>
+</blockquote>
+<p>大概的原因是因为 MD5 算法不允许在需要遵循 <a href="https://en.wikipedia.org/wiki/FIPS_140-2" target="_blank" rel="noopener noreffer">FIPS 140-2</a> (美国政府安全标准)的机器上使用，为了统一各种语言的 driver 和平台下的实现和表现，采用了5字节系统唯一的随机数值作为一个机器的标识码。</p>
+<p>除此之外，原来 3 byte + 2 byte的形式在有些使用场景中容易获得同样的数值，举个栗子。</p>
+<p>在容器中部署 Mongo 的实例，系统编排启动、重启的一批容器，自动启动Mongo的时候，由于容器使用同样的镜像，执行同样的步骤，很大概率会出现相同pid的情况，而且机器名称也很可能是一样的。</p>
+<h3 id="22-driver实现">2.2 driver实现</h3>
+<p>MongoDB driver在首次启动/首次生成 ObjectID 的时候，会初始化一次机器识别码和随机一个couter初始值，但是不同driver中间的实现五花八门。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="cm">/*C版本 https://github.com/mongodb/mongo-c-driver/blob/454a01422ee61d2add82f054aa3799750b7947e2/src/libbson/src/bson/bson-context.c#L268
+</span><span class="cm">* C版本将时间、进程id、主机名称异或得到一个随机种子，再随机5字节机器码和counter初始值。
+</span><span class="cm">*/</span>
+<span class="k">static</span> <span class="kt">void</span>
+<span class="nf">_bson_context_init_random</span> <span class="p">(</span><span class="n">bson_context_t</span> <span class="o">*</span><span class="n">context</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">init_sequence</span><span class="p">)</span>
+<span class="p">{</span>
+   <span class="kt">int64_t</span> <span class="n">rand_bytes</span><span class="p">;</span>
+   <span class="k">struct</span> <span class="n">timeval</span> <span class="n">tv</span><span class="p">;</span>
+   <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">seed</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+   <span class="kt">char</span> <span class="n">hostname</span><span class="p">[</span><span class="n">HOST_NAME_MAX</span><span class="p">];</span>
+   <span class="kt">char</span> <span class="o">*</span><span class="n">ptr</span><span class="p">;</span>
+   <span class="kt">int</span> <span class="n">hostname_chars_left</span><span class="p">;</span>
+
+   <span class="cm">/*
+</span><span class="cm">    * The seed consists of the following xor&#39;d together:
+</span><span class="cm">    * - current time in seconds
+</span><span class="cm">    * - current time in milliseconds
+</span><span class="cm">    * - current pid
+</span><span class="cm">    * - current hostname
+</span><span class="cm">    */</span>
+   <span class="n">bson_gettimeofday</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">tv</span><span class="p">);</span>
+   <span class="n">seed</span> <span class="o">^=</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span><span class="p">)</span> <span class="n">tv</span><span class="p">.</span><span class="n">tv_sec</span><span class="p">;</span>
+   <span class="n">seed</span> <span class="o">^=</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span><span class="p">)</span> <span class="n">tv</span><span class="p">.</span><span class="n">tv_usec</span><span class="p">;</span>
+   <span class="n">seed</span> <span class="o">^=</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span><span class="p">)</span> <span class="n">context</span><span class="o">-&gt;</span><span class="n">pid</span><span class="p">;</span>
+
+   <span class="n">context</span><span class="o">-&gt;</span><span class="n">gethostname</span> <span class="p">(</span><span class="n">hostname</span><span class="p">);</span>
+   <span class="n">hostname_chars_left</span> <span class="o">=</span> <span class="n">strlen</span> <span class="p">(</span><span class="n">hostname</span><span class="p">);</span>
+   <span class="n">ptr</span> <span class="o">=</span> <span class="n">hostname</span><span class="p">;</span>
+   <span class="k">while</span> <span class="p">(</span><span class="n">hostname_chars_left</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kt">uint32_t</span> <span class="n">hostname_chunk</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="kt">uint32_t</span> <span class="n">to_copy</span> <span class="o">=</span> <span class="n">hostname_chars_left</span> <span class="o">&gt;</span> <span class="mi">4</span> <span class="o">?</span> <span class="mi">4</span> <span class="o">:</span> <span class="n">hostname_chars_left</span><span class="p">;</span>
+
+      <span class="n">memcpy</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">hostname_chunk</span><span class="p">,</span> <span class="n">ptr</span><span class="p">,</span> <span class="n">to_copy</span><span class="p">);</span>
+      <span class="n">seed</span> <span class="o">^=</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span><span class="p">)</span> <span class="n">hostname_chunk</span><span class="p">;</span>
+      <span class="n">hostname_chars_left</span> <span class="o">-=</span> <span class="n">to_copy</span><span class="p">;</span>
+      <span class="n">ptr</span> <span class="o">+=</span> <span class="n">to_copy</span><span class="p">;</span>
+   <span class="p">}</span>
+
+<span class="cp">#ifndef BSON_HAVE_RAND_R
+</span><span class="cp"></span>   <span class="n">srand</span> <span class="p">(</span><span class="n">seed</span><span class="p">);</span>
+<span class="cp">#endif
+</span><span class="cp"></span>
+   <span class="cm">/* Generate a seed for the random starting position of our increment
+</span><span class="cm">    * bytes and the five byte random number. */</span>
+   <span class="k">if</span> <span class="p">(</span><span class="n">init_sequence</span><span class="p">)</span> <span class="p">{</span>
+      <span class="cm">/* We mask off the last nibble so that the last digit of the OID will
+</span><span class="cm">       * start at zero. Just to be nice. */</span>
+      <span class="n">context</span><span class="o">-&gt;</span><span class="n">seq32</span> <span class="o">=</span> <span class="n">_get_rand</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">seed</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x007FFFF0</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="n">rand_bytes</span> <span class="o">=</span> <span class="n">_get_rand</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">seed</span><span class="p">);</span>
+   <span class="n">rand_bytes</span> <span class="o">&lt;&lt;=</span> <span class="mi">32</span><span class="p">;</span>
+   <span class="n">rand_bytes</span> <span class="o">|=</span> <span class="n">_get_rand</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">seed</span><span class="p">);</span>
+
+   <span class="cm">/* Copy five random bytes, endianness does not matter. */</span>
+   <span class="n">memcpy</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">context</span><span class="o">-&gt;</span><span class="n">rand</span><span class="p">,</span> <span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">rand_bytes</span><span class="p">,</span> <span class="k">sizeof</span> <span class="p">(</span><span class="n">context</span><span class="o">-&gt;</span><span class="n">rand</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="cm">/* golang版本 https://github.com/mongodb/mongo-go-driver/blob/master/bson/primitive/objectid.go
+</span><span class="cm">* go版本使用 rand.Reader 直接产生随机数，rand.Reader 是一个密码学安全的随机数生成器的公共实例
+</span><span class="cm">* rand.Reader在Linux下使用/dev/urandom实现，在windows下使用 RtlGenRandom 实现
+</span><span class="cm">*/</span>
+<span class="o">...</span>
+<span class="kd">var</span> <span class="nx">objectIDCounter</span> <span class="p">=</span> <span class="nf">readRandomUint32</span><span class="p">()</span>
+<span class="kd">var</span> <span class="nx">processUnique</span> <span class="p">=</span> <span class="nf">processUniqueBytes</span><span class="p">()</span>
+<span class="o">...</span>
+<span class="kd">func</span> <span class="nf">processUniqueBytes</span><span class="p">()</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="kt">byte</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">b</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="kt">byte</span>
+	<span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">io</span><span class="p">.</span><span class="nf">ReadFull</span><span class="p">(</span><span class="nx">rand</span><span class="p">.</span><span class="nx">Reader</span><span class="p">,</span> <span class="nx">b</span><span class="p">[:])</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nb">panic</span><span class="p">(</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;cannot initialize objectid package with crypto.rand.Reader: %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">))</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="nx">b</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">readRandomUint32</span><span class="p">()</span> <span class="kt">uint32</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">b</span> <span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="kt">byte</span>
+	<span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">io</span><span class="p">.</span><span class="nf">ReadFull</span><span class="p">(</span><span class="nx">rand</span><span class="p">.</span><span class="nx">Reader</span><span class="p">,</span> <span class="nx">b</span><span class="p">[:])</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nb">panic</span><span class="p">(</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;cannot initialize objectid package with crypto.rand.Reader: %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">))</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="p">(</span><span class="nb">uint32</span><span class="p">(</span><span class="nx">b</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">|</span> <span class="p">(</span><span class="nb">uint32</span><span class="p">(</span><span class="nx">b</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span><span class="p">)</span> <span class="p">|</span> <span class="p">(</span><span class="nb">uint32</span><span class="p">(</span><span class="nx">b</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)</span> <span class="p">|</span> <span class="p">(</span><span class="nb">uint32</span><span class="p">(</span><span class="nx">b</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="mi">24</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-python" data-lang="python"><span class="c1"># python版本 https://github.com/mongodb/mongo-python-driver/blob/master/bson/objectid.py</span>
+<span class="c1"># python 使用 os.urandom 生成随机数, os.urandom 跟 go 的类似，使用/dev/urandom 或者 系统提供的 api</span>
+<span class="c1"># os.urandom() method is used to generate a string of size random bytes suitable for cryptographic use or we can say this method generates a string containing random characters.</span>
+<span class="o">...</span>
+<span class="k">def</span> <span class="nf">_random_bytes</span><span class="p">():</span>
+    <span class="s2">&#34;&#34;&#34;Get the 5-byte random field of an ObjectId.&#34;&#34;&#34;</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ObjectId</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="s2">&#34;&#34;&#34;A MongoDB ObjectId.
+</span><span class="s2">    &#34;&#34;&#34;</span>
+
+    <span class="n">_pid</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">()</span>
+
+    <span class="n">_inc</span> <span class="o">=</span> <span class="n">SystemRandom</span><span class="p">()</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">_MAX_COUNTER_VALUE</span><span class="p">)</span>
+    <span class="n">_inc_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+
+    <span class="n">__random</span> <span class="o">=</span> <span class="n">_random_bytes</span><span class="p">()</span>
+<span class="o">...</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="23-真的唯一吗">2.3 真的唯一吗</h3>
+<p>作为一个唯一ID生成方案，ObjectId 真的100%唯一吗？</p>
+<p>从实现方案本身分析：</p>
+<ul>
+<li>
+<p>当一个进程一秒内生成超过 2^24 个 ObjectId，counter会溢出，得到重复 id</p>
+</li>
+<li>
+<p>机器识别码重复，在一定的时空条件下，在同样的时间戳和couter下生成重复的id</p>
+</li>
+<li>
+<p>一些年久失修的第三方driver错误的实现可能导致一定条件下产生重复id</p>
+</li>
+</ul>
+<p>第1点出现的前提条件达成的概率，毕竟普通服务器单进程千万级别写入/s，cpu要冒烟了。</p>
+<p>第2点达成的条件也比较苛刻，但是出现了就真的是，走鬼，见到运了。</p>
+<p>第3点比较容易避免，使用官方driver和较新的MongoDB即可。</p>
+<p>总的来说，ObjectId 能保证数据库级别的唯一性（不同collection之间），至于系统级的唯一性需要一些防御性的措施做保证。</p>
+<h3 id="24-其他唯一id生成方案">2.4 其他唯一ID生成方案</h3>
+<p>常见的方案由UUID、SnowFlake等，各有优劣，篇幅有限不展开细说，可查看https://segmentfault.com/a/1190000020993874</p>
+<h2 id="3-ttl索引">3 TTL索引</h2>
+<blockquote>
+<p>TTL indexes are special single-field indexes that MongoDB can use to automatically remove documents from a collection after a certain amount of time or at a specific clock time. Data expiration is useful for certain types of information like machine generated event data, logs, and session information that only need to persist in a database for a finite amount of time.</p>
+</blockquote>
+<p><a href="https://docs.mongodb.com/manual/core/index-ttl/" target="_blank" rel="noopener noreffer">文档传送门</a></p>
+<p>TTL全称是(Time To Live),TTL索引能对一个单列配置过期属性来<code>实现对文档的自动过期删除</code>，我们可以在对字段创建索引时添加<code>expireAfterSeconds</code>选项将索引转换为TTL索引，该<code>字段需要是date类型</code>，在以下几种场景下即使索引设置了expireAfterSeconds属性也不会生效
+- 如果该字段不是date类型，则文档不会过期
+- 如果文档没包含索引的这个字段，则文档不会过期</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback"># 创建TTL索引
+db.yourdb.createIndex( { &#34;fieldKey&#34;: 1 }, { expireAfterSeconds: 3600 } )
+</code></pre></td></tr></table>
+</div>
+</div><p>一次偶然的机会，跑了一个driver的测试用例，发现里面有个检查TTL功能的用例，把 expireAfterSeconds 设置成 1，然后开定时器等待几秒后，执行一个assert</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback"># 伪代码
+db.yourdb.createIndex( { &#34;fieldKey&#34;: 1 }, { expireAfterSeconds: 1 } )
+db.yourdb.insert({&#34;fieldKey&#34;: &#34;hehe&#34;})
+sleep(5)
+assert(db.yourdb.findOne({&#34;fieldKey&#34;: &#34;hehe&#34;}) == null)
+</code></pre></td></tr></table>
+</div>
+</div><p>然而assert失败了，文档还存在，打开 Mongo 客户端上去一看发现确实还在，但是过了一段时间后文档就被删除了。</p>
+<p>似乎 MongoDB 是按一定周期去检测、删除过期文档的。</p>
+<p>带着疑问，去扒了一下 MongoDB 的源码。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c++" data-lang="c++"><span class="c1">// https://github.com/mongodb/mongo/blob/master/src/mongo/db/ttl.cpp
+</span><span class="c1"></span><span class="p">...</span>
+<span class="k">class</span> <span class="nc">TTLMonitor</span> <span class="o">:</span> <span class="k">public</span> <span class="n">BackgroundJob</span> <span class="p">{</span>
+    <span class="kt">void</span> <span class="nf">run</span><span class="p">()</span> <span class="p">{</span>
+        <span class="p">{</span>
+            <span class="c1">// Wait until either ttlMonitorSleepSecs passes or a shutdown is requested.
+</span><span class="c1"></span>            <span class="k">auto</span> <span class="n">deadline</span> <span class="o">=</span> <span class="n">Date_t</span><span class="o">::</span><span class="n">now</span><span class="p">()</span> <span class="o">+</span> <span class="n">Seconds</span><span class="p">(</span><span class="n">ttlMonitorSleepSecs</span><span class="p">.</span><span class="n">load</span><span class="p">());</span>
+            <span class="n">stdx</span><span class="o">::</span><span class="n">unique_lock</span><span class="o">&lt;</span><span class="n">Latch</span><span class="o">&gt;</span> <span class="n">lk</span><span class="p">(</span><span class="n">_stateMutex</span><span class="p">);</span>
+
+            <span class="n">MONGO_IDLE_THREAD_BLOCK</span><span class="p">;</span>
+            <span class="n">_shuttingDownCV</span><span class="p">.</span><span class="n">wait_until</span><span class="p">(</span>
+                    <span class="n">lk</span><span class="p">,</span> <span class="n">deadline</span><span class="p">.</span><span class="n">toSystemTimePoint</span><span class="p">(),</span> <span class="p">[</span><span class="o">&amp;</span><span class="p">]</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_shuttingDown</span><span class="p">;</span> <span class="p">});</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="n">_shuttingDown</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">return</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="p">...</span>
+        <span class="n">doTTLPass</span><span class="p">();</span>
+        <span class="p">...</span>
+    <span class="p">}</span>
+    
+    <span class="cm">/**
+</span><span class="cm">     * Gets all TTL specifications for every collection and deletes expired documents.
+</span><span class="cm">     */</span>
+    <span class="kt">void</span> <span class="nf">doTTLPass</span><span class="p">()</span> <span class="p">{</span>
+        <span class="p">...</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="p">...</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p>MongoDB起了一个后台线程，每间隔 <code>ttlMonitorSleepSecs</code> 这段之间检测一次过期的文档并删除，通过搜索 MongoDB 的代码和实测，这个值默认为60秒。</p>
+<p>改变<code>ttlMonitorSleepSecs</code></p>
+<blockquote>
+<p>As of today, it&rsquo;s not possible, but already tracked in <a href="https://jira.mongodb.org/" target="_blank" rel="noopener noreffer">MongoDB JIRA</a>:</p>
+<ul>
+<li><a href="https://jira.mongodb.org/browse/SERVER-6712" target="_blank" rel="noopener noreffer"><code>SERVER-6712</code></a>: <em>Make TTL Collection background task period user defined (command line option)</em></li>
+<li><a href="https://jira.mongodb.org/browse/SERVER-8616" target="_blank" rel="noopener noreffer"><code>SERVER-8616</code></a>: <em>Adding Tunable to TTL Collection thread</em></li>
+<li><a href="https://jira.mongodb.org/browse/SERVER-13937" target="_blank" rel="noopener noreffer"><code>SERVER-13937</code></a>: <em>Allow setting a window and interval for the TTL monitor</em></li>
+</ul>
+<p>There&rsquo;s also kind of a workaround - you can turn TTL monitor off and on manually:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-js" data-lang="js"><span class="nx">db</span><span class="p">.</span><span class="nx">adminCommand</span><span class="p">({</span><span class="nx">setParameter</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">ttlMonitorEnabled</span><span class="o">:</span> <span class="kc">false</span><span class="p">});</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">adminCommand</span><span class="p">({</span><span class="nx">setParameter</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">ttlMonitorEnabled</span><span class="o">:</span> <span class="kc">true</span><span class="p">});</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>EDIT:</strong> It turned out, that there is a <code>ttlMonitorSleepSecs</code> flag. It&rsquo;s mentioned for example <a href="http://hassansin.github.io/working-with-mongodb-ttl-index#ttlmonitor-sleep-interval" target="_blank" rel="noopener noreffer">here</a>, but it&rsquo;s not mentioned in the official docs.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-js" data-lang="js"><span class="nx">db</span><span class="p">.</span><span class="nx">adminCommand</span><span class="p">({</span><span class="nx">setParameter</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">ttlMonitorSleepSecs</span><span class="o">:</span> <span class="mi">60</span><span class="p">});</span>
+</code></pre></td></tr></table>
+</div>
+</div></blockquote>
+<p><a href="https://stackoverflow.com/a/51071023" target="_blank" rel="noopener noreffer">原文地址</a></p>
+<h2 id="4-mongodb-wire-protocol">4 MongoDB Wire Protocol</h2>
+<p><a href="https://docs.mongodb.com/manual/reference/mongodb-wire-protocol/" target="_blank" rel="noopener noreffer">MongoDB Wire Protocol</a> 是一个简单的基于套接字的请求-响应样式协议。Client 端通过常规的 TCP/IP 套接字与数据库服务器通信。</p>
+<p>Client 端应使用常规的 TCP/IP 套接字连接到数据库，所有整数都使用低位字节序：即，最低有效字节在前。</p>
+<p>协议的消息头</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">struct MsgHeader {
+    int32   messageLength; // 消息的总长度，包括这个字段本身
+    int32   requestID;     // 请求的标识id，同一个客户端，每次请求都生成一个唯一id
+    int32   responseTo;    // 原始的requestID，回复给客户端，客户端用于处理请求回复
+    int32   opCode;        // 请求的类型，不同的类型对应不同的消息体
+}
+</code></pre></td></tr></table>
+</div>
+</div><p>opCode的类型：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Opcode Name</th>
+<th style="text-align:left">Value</th>
+<th style="text-align:left">Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>OP_MSG</code></td>
+<td style="text-align:left">2013</td>
+<td style="text-align:left">Send a message using the format introduced in MongoDB 3.6.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>OP_REPLY</code><em>Deprecated in MongoDB 5.0.</em></td>
+<td style="text-align:left">1</td>
+<td style="text-align:left">Reply to a client request. <code>responseTo</code> is set.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>OP_UPDATE</code><em>Deprecated in MongoDB 5.0.</em></td>
+<td style="text-align:left">2001</td>
+<td style="text-align:left">Update document.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>OP_INSERT</code><em>Deprecated in MongoDB 5.0.</em></td>
+<td style="text-align:left">2002</td>
+<td style="text-align:left">Insert new document.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>RESERVED</code></td>
+<td style="text-align:left">2003</td>
+<td style="text-align:left">Formerly used for OP_GET_BY_OID.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>OP_QUERY</code><em>Deprecated in MongoDB 5.0.</em></td>
+<td style="text-align:left">2004</td>
+<td style="text-align:left">Query a collection.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>OP_GET_MORE</code><em>Deprecated in MongoDB 5.0.</em></td>
+<td style="text-align:left">2005</td>
+<td style="text-align:left">Get more data from a query. See Cursors.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>OP_DELETE</code><em>Deprecated in MongoDB 5.0.</em></td>
+<td style="text-align:left">2006</td>
+<td style="text-align:left">Delete documents.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>OP_KILL_CURSORS</code><em>Deprecated in MongoDB 5.0.</em></td>
+<td style="text-align:left">2007</td>
+<td style="text-align:left">Notify database that the client has finished with the cursor.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>OP_COMPRESSED</code></td>
+<td style="text-align:left">2012</td>
+<td style="text-align:left">Wraps other opcodes using compression</td>
+</tr>
+</tbody>
+</table>
+<p>在较新版本的MongoDB中，很多请求类型都已经废弃，取而代之的是 <a href="https://docs.mongodb.com/manual/reference/mongodb-wire-protocol/#std-label-wire-op-msg" target="_blank" rel="noopener noreffer">OP_MSG </a>(<a href="https://github.com/mongodb/specifications/blob/master/source/message/OP_MSG.rst" target="_blank" rel="noopener noreffer">特性设计文档</a>)</p>
+<blockquote>
+<p><code>OP_MSG</code> is a bi-directional wire protocol opcode introduced in MongoDB 3.6 with the goal of replacing most existing opcodes, merging their use into one extendable opcode.</p>
+</blockquote>
+<p>按文档的描述，<code>OP_MSG</code> 是一个更具拓展性的协议格式，用来取代现有的一些 opcodes，例如 OP_DELETE, OP_QUERY等。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">OP_MSG {
+    MsgHeader header;          // standard message header
+    uint32 flagBits;           // message flags
+    Sections[] sections;       // data sections
+    optional&lt;uint32&gt; checksum; // optional CRC-32C checksum
+}
+</code></pre></td></tr></table>
+</div>
+</div><p>篇幅有限，这里不详细展开，后续有空再开新坑扒一扒，这里先立个flag。</p>
+<p>也是偶然的一次机会，跑了一次 driver 的测试用例，发现某些请求会出现奇奇怪怪的现象，比如请求没回复，排除了一下是MongoDB版本和driver版本对不上，新版本 MongoDB 废弃了某些协议，因此去扒了一下。</p>
+<h2 id="5-附录">5 附录</h2>
+<p>MongoDB官方文档： <a href="https://docs.mongodb.com/manual/">https://docs.mongodb.com/manual/</a></p>
+<p>MongoDB特性文档： <a href="https://github.com/mongodb/specifications">https://github.com/mongodb/specifications</a></p>
+<p>分布式唯一ID的几种生成方案： <a href="https://segmentfault.com/a/1190000020993874">https://segmentfault.com/a/1190000020993874</a></p>
+<p>stackoverflow：</p>
+<ul>
+<li><a href="https://stackoverflow.com/questions/4677237/possibility-of-duplicate-mongo-objectids-being-generated-in-two-different-colle">https://stackoverflow.com/questions/4677237/possibility-of-duplicate-mongo-objectids-being-generated-in-two-different-colle</a></li>
+<li><a href="https://stackoverflow.com/questions/62118154/why-mongodb-java-driver-uses-random-bytes-instead-of-machine-id-in-objectid">https://stackoverflow.com/questions/62118154/why-mongodb-java-driver-uses-random-bytes-instead-of-machine-id-in-objectid</a></li>
+</ul>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2021-07-15</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/mongodb/">MongoDB</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/2021-06-05-rpi-magic/" class="prev" rel="prev" title="树莓派折腾笔记：通过iptables &#43; dnsmasq &#43; magic开启魔法"><i class="fas fa-angle-left fa-fw"></i>树莓派折腾笔记：通过iptables &#43; dnsmasq &#43; magic开启魔法</a></div>
+</div>
+<div id="comments"></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.85.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2021</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">lchannng</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/copy-tex.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":1000},"comment":{},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>
