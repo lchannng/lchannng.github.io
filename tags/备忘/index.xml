@@ -10,9 +10,9 @@
     <author>Author</author>
     <guid>/2019-05-16-go-defer-panic-recover/</guid>
     <description><![CDATA[官方blog传送门：https://blog.golang.org/defer-panic-and-recover
-defer  A defer statement pushes a function call onto a list. The list of saved calls is executed after the surrounding function returns. Defer is commonly used to simplify functions that perform various clean-up actions.
- defer类似cpp在对象在离开作用于后析构，defer可以多次，这样形成一个defer栈，后defer的语句在函数返回时将先被调用。
-1 2 3 4 5 6 7 8 9 10 11 12 13 14 15  func CopyFile(dstName, srcName string) (written int64, err error) { src, err := os.Open(srcName) if err !]]></description>
+defer A defer statement pushes a function call onto a list. The list of saved calls is executed after the surrounding function returns. Defer is commonly used to simplify functions that perform various clean-up actions.
+defer类似cpp在对象在离开作用于后析构，defer可以多次，这样形成一个defer栈，后defer的语句在函数返回时将先被调用。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 func CopyFile(dstName, srcName string) (written int64, err error) { src, err := os.Open(srcName) if err != nil { return } defer src.]]></description>
 </item><item>
     <title>Windows下安装mysql</title>
     <link>/2019-05-14-installing-mysql-on-windows/</link>
@@ -22,8 +22,8 @@ defer  A defer statement pushes a function call onto a list. The list of saved c
     <description><![CDATA[文档传送门(https://dev.mysql.com/doc/refman/8.0/en/windows-installation.html)
 从noinstall ZIP Archive安装
 初始化data目录
-1  mysqld --initialize --console   登录, 输入随机生成的密码
-1  mysql -u root -p   修改密码
-1  ALTER USER &#39;root&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;your-password&#39;;   ]]></description>
+1 mysqld --initialize --console 登录, 输入随机生成的密码
+1 mysql -u root -p 修改密码
+1 ALTER USER &#39;root&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;your-password&#39;; ]]></description>
 </item></channel>
 </rss>

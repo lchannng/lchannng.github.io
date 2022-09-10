@@ -14,13 +14,13 @@
 大体的思路是在本地开启一个透明代理，通过iptables把某些神秘地址转发到透明代理，由透明代理发到一个跳板机器上。
 由于使用了透明代理，本地的应用不知道有代理的存在，会提前进行dns解析，神秘地址会被定向到一些不存在的ip上，要想拿到正确的ip，神秘地址的dns解析请求要通过安全的方式进行，比如tls、https，可以使用cloudflare的dns服务器。
 准备 上一篇已经把dnsmasq装上了，这次剩下需要用到的工具安排上。
-1  $ apt install ipset netfilter-persistent iptables-persistent   ipset是iptables 的一个协助工具，用来维护特定的ip集合，iptables可以对这些集合进行屏蔽、转发。
+1 $ apt install ipset netfilter-persistent iptables-persistent ipset是iptables 的一个协助工具，用来维护特定的ip集合，iptables可以对这些集合进行屏蔽、转发。
 netfilter-persistent、iptables-persistent主要用来持久化iptables规则和开机自动恢复。
 ipset 配置 ipset作用 需要创建三个ipset：reserved、china、magic
 reserved: 保留地址，需要跳过发到这些地址的流量
 china：大局域网内部所有地址，需要跳过发到这些地址的流量
 maigc：跳板机的地址，需要跳过发到这些地址的流量
 ipset配置文件 创建 /etc/ipset.d目录，并创建ipset配置文件：reserved.conf，magic.conf，china.conf
-1 2 3 4 5 6 7 8 9 10 11 12 13  # /etc/ipset.d/reserved.conf create reserved hash:net family inet hashsize 256 maxelem 1024 add reserved 0.0.0.0/8 add reserved 10.0.0.0/8 add reserved 100.64.0.0/10 add reserved 127.0.0.0/8 add reserved 169.254.0.0/16 add reserved 172.]]></description>
+1 2 3 4 5 6 7 8 9 10 11 12 13 # /etc/ipset.d/reserved.conf create reserved hash:net family inet hashsize 256 maxelem 1024 add reserved 0.0.0.0/8 add reserved 10.0.0.0/8 add reserved 100.64.0.0/10 add reserved 127.0.0.0/8 add reserved 169.254.0.0/16 add reserved 172.16.0.0/12 add reserved 192.]]></description>
 </item></channel>
 </rss>

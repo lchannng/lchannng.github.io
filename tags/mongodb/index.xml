@@ -13,6 +13,6 @@
 本文主要记录一下在学习、使用 MongoDB 过程中遇到的一些问题和学到的一些姿势。
 2 Objectid 2.1 数据结构 在 MongoDB 中，集合中每个文档都需要一个 唯一的 _id 字段作为主键，如果插入的文档没有 _id 字段， MongoDB 会自动生成一个 ObjectId 作为 _id。
 ObjectId是一个12字节 BSON 类型数据，最初的数据格式如下：
-  a 4-byte value representing the seconds since the Unix epoch (which will not run out of seconds until the year 2106) a 3-byte machine identifier (usually derived from the MAC address), a 2-byte process id, and a 3-byte counter, starting with a random value.]]></description>
+a 4-byte value representing the seconds since the Unix epoch (which will not run out of seconds until the year 2106) a 3-byte machine identifier (usually derived from the MAC address), a 2-byte process id, and a 3-byte counter, starting with a random value.]]></description>
 </item></channel>
 </rss>

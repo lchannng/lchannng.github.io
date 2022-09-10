@@ -12,8 +12,8 @@
     <description><![CDATA[文档传送门(https://dev.mysql.com/doc/refman/8.0/en/windows-installation.html)
 从noinstall ZIP Archive安装
 初始化data目录
-1  mysqld --initialize --console   登录, 输入随机生成的密码
-1  mysql -u root -p   修改密码
-1  ALTER USER &#39;root&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;your-password&#39;;   ]]></description>
+1 mysqld --initialize --console 登录, 输入随机生成的密码
+1 mysql -u root -p 修改密码
+1 ALTER USER &#39;root&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;your-password&#39;; ]]></description>
 </item></channel>
 </rss>

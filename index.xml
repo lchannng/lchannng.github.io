@@ -15,7 +15,7 @@
 本文主要记录一下在学习、使用 MongoDB 过程中遇到的一些问题和学到的一些姿势。
 2 Objectid 2.1 数据结构 在 MongoDB 中，集合中每个文档都需要一个 唯一的 _id 字段作为主键，如果插入的文档没有 _id 字段， MongoDB 会自动生成一个 ObjectId 作为 _id。
 ObjectId是一个12字节 BSON 类型数据，最初的数据格式如下：
-  a 4-byte value representing the seconds since the Unix epoch (which will not run out of seconds until the year 2106) a 3-byte machine identifier (usually derived from the MAC address), a 2-byte process id, and a 3-byte counter, starting with a random value.]]></description>
+a 4-byte value representing the seconds since the Unix epoch (which will not run out of seconds until the year 2106) a 3-byte machine identifier (usually derived from the MAC address), a 2-byte process id, and a 3-byte counter, starting with a random value.]]></description>
 </item><item>
     <title>树莓派折腾笔记：通过iptables &#43; dnsmasq &#43; magic开启魔法</title>
     <link>/2021-06-05-rpi-magic/</link>
@@ -27,14 +27,14 @@ ObjectId是一个12字节 BSON 类型数据，最初的数据格式如下：
 大体的思路是在本地开启一个透明代理，通过iptables把某些神秘地址转发到透明代理，由透明代理发到一个跳板机器上。
 由于使用了透明代理，本地的应用不知道有代理的存在，会提前进行dns解析，神秘地址会被定向到一些不存在的ip上，要想拿到正确的ip，神秘地址的dns解析请求要通过安全的方式进行，比如tls、https，可以使用cloudflare的dns服务器。
 准备 上一篇已经把dnsmasq装上了，这次剩下需要用到的工具安排上。
-1  $ apt install ipset netfilter-persistent iptables-persistent   ipset是iptables 的一个协助工具，用来维护特定的ip集合，iptables可以对这些集合进行屏蔽、转发。
+1 $ apt install ipset netfilter-persistent iptables-persistent ipset是iptables 的一个协助工具，用来维护特定的ip集合，iptables可以对这些集合进行屏蔽、转发。
 netfilter-persistent、iptables-persistent主要用来持久化iptables规则和开机自动恢复。
 ipset 配置 ipset作用 需要创建三个ipset：reserved、china、magic
 reserved: 保留地址，需要跳过发到这些地址的流量
 china：大局域网内部所有地址，需要跳过发到这些地址的流量
 maigc：跳板机的地址，需要跳过发到这些地址的流量
 ipset配置文件 创建 /etc/ipset.d目录，并创建ipset配置文件：reserved.conf，magic.conf，china.conf
-1 2 3 4 5 6 7 8 9 10 11 12 13  # /etc/ipset.d/reserved.conf create reserved hash:net family inet hashsize 256 maxelem 1024 add reserved 0.0.0.0/8 add reserved 10.0.0.0/8 add reserved 100.64.0.0/10 add reserved 127.0.0.0/8 add reserved 169.254.0.0/16 add reserved 172.]]></description>
+1 2 3 4 5 6 7 8 9 10 11 12 13 # /etc/ipset.d/reserved.conf create reserved hash:net family inet hashsize 256 maxelem 1024 add reserved 0.0.0.0/8 add reserved 10.0.0.0/8 add reserved 100.64.0.0/10 add reserved 127.0.0.0/8 add reserved 169.254.0.0/16 add reserved 172.16.0.0/12 add reserved 192.]]></description>
 </item><item>
     <title>树莓派折腾笔记：开启WiFi热点</title>
     <link>/2021-05-30-rpi-wifi/</link>
@@ -44,12 +44,12 @@ ipset配置文件 创建 /etc/ipset.d目录，并创建ipset配置文件：reser
     <description><![CDATA[概述 印度养蛊，传进来了&hellip;
 由于疫情宅在家，闲来无事折腾下手上的树莓派4B，先用hostapd + dnsmasq搭一个热点，后面再把一些魔法搞起来。
 准备 之前已经给rpi装了ubuntu server 20.04，现在把一些软件装上。
-1  # apt install hostapd dnsmasq   增加网桥 以桥接的方式接入树莓派的无线网卡wlan0。
+1 # apt install hostapd dnsmasq 增加网桥 以桥接的方式接入树莓派的无线网卡wlan0。
 ubuntu server 20.04可以通过netplan修改网络配置，netplan是基于systemd-networkd的，没有netplan可以直接修改systemd-networkd配置。非systemd的系统自行使用bridge-utils自行增加网桥。
 修改/etc/netplan/50-cloud-init.yaml文件
-1 2 3 4 5 6 7 8 9 10 11  network: ethernets: eth0: dhcp4: true optional: true bridges: brlan: dhcp4: false addresses: [ 172.17.0.1/24 ] version: 2   新增bridges这段配置，网桥名字为brlan，关掉dhcp，改成静态地址172.17.0.1/24。
+1 2 3 4 5 6 7 8 9 10 network: ethernets: eth0: dhcp4: true optional: true bridges: brlan: dhcp4: false addresses: [ 172.17.0.1/24 ] version: 2 新增bridges这段配置，网桥名字为brlan，关掉dhcp，改成静态地址172.17.0.1/24。
 hostapd配置 修改/etc/hostapd/hostapd.conf
-1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26  interface=wlan0 # 指定网卡 bridge=brlan # 桥接到brlan ssid=[wifi名称] macaddr_acl=0 ignore_broadcast_ssid=0 auth_algs=1 wpa=2 wpa_passphrase=[wifi密码] wpa_key_mgmt=WPA-PSK wpa_pairwise=TKIP rsn_pairwise=CCMP ## 5G (树莓派的无线网卡过于辣鸡，5G隔墙就没了，还是开2.]]></description>
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 interface=wlan0 # 指定网卡 bridge=brlan # 桥接到brlan ssid=[wifi名称] macaddr_acl=0 ignore_broadcast_ssid=0 auth_algs=1 wpa=2 wpa_passphrase=[wifi密码] wpa_key_mgmt=WPA-PSK wpa_pairwise=TKIP rsn_pairwise=CCMP ## 5G (树莓派的无线网卡过于辣鸡，5G隔墙就没了，还是开2.]]></description>
 </item><item>
     <title>openwrt dns 配置</title>
     <link>/2021-05-05-openwrt-dns-configuration/</link>
@@ -57,10 +57,13 @@ hostapd配置 修改/etc/hostapd/hostapd.conf
     <author>Author</author>
     <guid>/2021-05-05-openwrt-dns-configuration/</guid>
     <description><![CDATA[安装依赖 自带的dnsmasq 不支持 ipset，需要安装 dnsmasq-full 才能支持所有功能，安装前先删除原来的 dnsmasq
-1  $ opkg install dnsmasq-full ipset   配置dnsmasq 创建 dnsmasq.d 目录
-1  $ mkdir /etc/dnsmasq.d   在 /etc/dnsmasq.conf 末尾增加 conf-dir
-1 2 3 4  ... # include /etc/dnsmasq.d conf-dir=/etc/dnsmasq.d/,*.conf   配置 DNS 服务器 新建文件/etc/dnsmasq.d/dns.conf
-1 2 3 4 5  # ignore /etc/resolv.conf no-resolv server=119.29.29.29 server=223.5.5.5   ipset 配置 dnsmasq 在 2.66 版之后加入了对 ipset 的支持，可将指定域名的 IP 解析后自动加入某一 ipset 中，可以结合魔法使用。]]></description>
+1 $ opkg install dnsmasq-full ipset 配置dnsmasq 创建 dnsmasq.d 目录
+1 $ mkdir /etc/dnsmasq.d 在 /etc/dnsmasq.conf 末尾增加 conf-dir
+1 2 3 4 ... # include /etc/dnsmasq.d conf-dir=/etc/dnsmasq.d/,*.conf 配置 DNS 服务器 新建文件/etc/dnsmasq.d/dns.conf
+1 2 3 4 5 # ignore /etc/resolv.conf no-resolv server=119.29.29.29 server=223.5.5.5 ipset 配置 dnsmasq 在 2.66 版之后加入了对 ipset 的支持，可将指定域名的 IP 解析后自动加入某一 ipset 中，可以结合魔法使用。
+通过工具生成 dnsmasq 转换 ipset 规则：传送门
+生成文件放到/etc/dnsmasq.d/xxx.conf
+由于上面已经配置好了一个相对可靠的 dns 服务器，xxx.conf 中可以去掉针对特定域名的配置特定的 dns 服务器]]></description>
 </item><item>
     <title>Netgear R6850刷openwrt</title>
     <link>/2021-05-03-netgear-r6850-openwrt/</link>
@@ -73,7 +76,7 @@ hostapd配置 修改/etc/hostapd/hostapd.conf
 1 制作固件 1.1 环境搭建 由于编译太耗时了，因此选择Image Builder来制作镜像。具体可参照 官方文档。
 为了简化环境搭建、方便后续更新，把Image builder的运行环境封装在Docker镜像中，在Docker中构建OpenWrt镜像
 上次刷OpenWrt的时候已经封装了一些脚本，源码放在lchannng/openwrt-builder。
-1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38  # openwrt-builder/DockerfileFROMdebian:buster-slimMAINTAINERlchannng &lt;lchannng@gmail.com&gt;RUN apt-get update -qq &amp;&amp;\  apt-get install -y \  build-essential \  curl \  file \  gawk \  gettext \  git \  libncurses5-dev \  libssl-dev \  python2.]]></description>
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 # openwrt-builder/Dockerfile FROM debian:buster-slim MAINTAINER lchannng &lt;lchannng@gmail.com&gt; RUN apt-get update -qq &amp;&amp;\ apt-get install -y \ build-essential \ curl \ file \ gawk \ gettext \ git \ libncurses5-dev \ libssl-dev \ python2.]]></description>
 </item><item>
     <title>go笔记 defer,panic,recover</title>
     <link>/2019-05-16-go-defer-panic-recover/</link>
@@ -81,9 +84,9 @@ hostapd配置 修改/etc/hostapd/hostapd.conf
     <author>Author</author>
     <guid>/2019-05-16-go-defer-panic-recover/</guid>
     <description><![CDATA[官方blog传送门：https://blog.golang.org/defer-panic-and-recover
-defer  A defer statement pushes a function call onto a list. The list of saved calls is executed after the surrounding function returns. Defer is commonly used to simplify functions that perform various clean-up actions.
- defer类似cpp在对象在离开作用于后析构，defer可以多次，这样形成一个defer栈，后defer的语句在函数返回时将先被调用。
-1 2 3 4 5 6 7 8 9 10 11 12 13 14 15  func CopyFile(dstName, srcName string) (written int64, err error) { src, err := os.Open(srcName) if err !]]></description>
+defer A defer statement pushes a function call onto a list. The list of saved calls is executed after the surrounding function returns. Defer is commonly used to simplify functions that perform various clean-up actions.
+defer类似cpp在对象在离开作用于后析构，defer可以多次，这样形成一个defer栈，后defer的语句在函数返回时将先被调用。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 func CopyFile(dstName, srcName string) (written int64, err error) { src, err := os.Open(srcName) if err != nil { return } defer src.]]></description>
 </item><item>
     <title>Windows下安装mysql</title>
     <link>/2019-05-14-installing-mysql-on-windows/</link>
@@ -93,8 +96,8 @@ defer  A defer statement pushes a function call onto a list. The list of saved c
     <description><![CDATA[文档传送门(https://dev.mysql.com/doc/refman/8.0/en/windows-installation.html)
 从noinstall ZIP Archive安装
 初始化data目录
-1  mysqld --initialize --console   登录, 输入随机生成的密码
-1  mysql -u root -p   修改密码
-1  ALTER USER &#39;root&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;your-password&#39;;   ]]></description>
+1 mysqld --initialize --console 登录, 输入随机生成的密码
+1 mysql -u root -p 修改密码
+1 ALTER USER &#39;root&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;your-password&#39;; ]]></description>
 </item></channel>
 </rss>

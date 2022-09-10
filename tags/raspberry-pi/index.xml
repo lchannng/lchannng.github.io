@@ -14,14 +14,14 @@
 大体的思路是在本地开启一个透明代理，通过iptables把某些神秘地址转发到透明代理，由透明代理发到一个跳板机器上。
 由于使用了透明代理，本地的应用不知道有代理的存在，会提前进行dns解析，神秘地址会被定向到一些不存在的ip上，要想拿到正确的ip，神秘地址的dns解析请求要通过安全的方式进行，比如tls、https，可以使用cloudflare的dns服务器。
 准备 上一篇已经把dnsmasq装上了，这次剩下需要用到的工具安排上。
-1  $ apt install ipset netfilter-persistent iptables-persistent   ipset是iptables 的一个协助工具，用来维护特定的ip集合，iptables可以对这些集合进行屏蔽、转发。
+1 $ apt install ipset netfilter-persistent iptables-persistent ipset是iptables 的一个协助工具，用来维护特定的ip集合，iptables可以对这些集合进行屏蔽、转发。
 netfilter-persistent、iptables-persistent主要用来持久化iptables规则和开机自动恢复。
 ipset 配置 ipset作用 需要创建三个ipset：reserved、china、magic
 reserved: 保留地址，需要跳过发到这些地址的流量
 china：大局域网内部所有地址，需要跳过发到这些地址的流量
 maigc：跳板机的地址，需要跳过发到这些地址的流量
 ipset配置文件 创建 /etc/ipset.d目录，并创建ipset配置文件：reserved.conf，magic.conf，china.conf
-1 2 3 4 5 6 7 8 9 10 11 12 13  # /etc/ipset.d/reserved.conf create reserved hash:net family inet hashsize 256 maxelem 1024 add reserved 0.0.0.0/8 add reserved 10.0.0.0/8 add reserved 100.64.0.0/10 add reserved 127.0.0.0/8 add reserved 169.254.0.0/16 add reserved 172.]]></description>
+1 2 3 4 5 6 7 8 9 10 11 12 13 # /etc/ipset.d/reserved.conf create reserved hash:net family inet hashsize 256 maxelem 1024 add reserved 0.0.0.0/8 add reserved 10.0.0.0/8 add reserved 100.64.0.0/10 add reserved 127.0.0.0/8 add reserved 169.254.0.0/16 add reserved 172.16.0.0/12 add reserved 192.]]></description>
 </item><item>
     <title>树莓派折腾笔记：开启WiFi热点</title>
     <link>/2021-05-30-rpi-wifi/</link>
@@ -31,11 +31,11 @@ ipset配置文件 创建 /etc/ipset.d目录，并创建ipset配置文件：reser
     <description><![CDATA[概述 印度养蛊，传进来了&hellip;
 由于疫情宅在家，闲来无事折腾下手上的树莓派4B，先用hostapd + dnsmasq搭一个热点，后面再把一些魔法搞起来。
 准备 之前已经给rpi装了ubuntu server 20.04，现在把一些软件装上。
-1  # apt install hostapd dnsmasq   增加网桥 以桥接的方式接入树莓派的无线网卡wlan0。
+1 # apt install hostapd dnsmasq 增加网桥 以桥接的方式接入树莓派的无线网卡wlan0。
 ubuntu server 20.04可以通过netplan修改网络配置，netplan是基于systemd-networkd的，没有netplan可以直接修改systemd-networkd配置。非systemd的系统自行使用bridge-utils自行增加网桥。
 修改/etc/netplan/50-cloud-init.yaml文件
-1 2 3 4 5 6 7 8 9 10 11  network: ethernets: eth0: dhcp4: true optional: true bridges: brlan: dhcp4: false addresses: [ 172.17.0.1/24 ] version: 2   新增bridges这段配置，网桥名字为brlan，关掉dhcp，改成静态地址172.17.0.1/24。
+1 2 3 4 5 6 7 8 9 10 network: ethernets: eth0: dhcp4: true optional: true bridges: brlan: dhcp4: false addresses: [ 172.17.0.1/24 ] version: 2 新增bridges这段配置，网桥名字为brlan，关掉dhcp，改成静态地址172.17.0.1/24。
 hostapd配置 修改/etc/hostapd/hostapd.conf
-1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26  interface=wlan0 # 指定网卡 bridge=brlan # 桥接到brlan ssid=[wifi名称] macaddr_acl=0 ignore_broadcast_ssid=0 auth_algs=1 wpa=2 wpa_passphrase=[wifi密码] wpa_key_mgmt=WPA-PSK wpa_pairwise=TKIP rsn_pairwise=CCMP ## 5G (树莓派的无线网卡过于辣鸡，5G隔墙就没了，还是开2.]]></description>
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 interface=wlan0 # 指定网卡 bridge=brlan # 桥接到brlan ssid=[wifi名称] macaddr_acl=0 ignore_broadcast_ssid=0 auth_algs=1 wpa=2 wpa_passphrase=[wifi密码] wpa_key_mgmt=WPA-PSK wpa_pairwise=TKIP rsn_pairwise=CCMP ## 5G (树莓派的无线网卡过于辣鸡，5G隔墙就没了，还是开2.]]></description>
 </item></channel>
 </rss>

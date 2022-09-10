@@ -10,8 +10,8 @@
     <author>Author</author>
     <guid>/2019-05-16-go-defer-panic-recover/</guid>
     <description><![CDATA[官方blog传送门：https://blog.golang.org/defer-panic-and-recover
-defer  A defer statement pushes a function call onto a list. The list of saved calls is executed after the surrounding function returns. Defer is commonly used to simplify functions that perform various clean-up actions.
- defer类似cpp在对象在离开作用于后析构，defer可以多次，这样形成一个defer栈，后defer的语句在函数返回时将先被调用。
-1 2 3 4 5 6 7 8 9 10 11 12 13 14 15  func CopyFile(dstName, srcName string) (written int64, err error) { src, err := os.Open(srcName) if err !]]></description>
+defer A defer statement pushes a function call onto a list. The list of saved calls is executed after the surrounding function returns. Defer is commonly used to simplify functions that perform various clean-up actions.
+defer类似cpp在对象在离开作用于后析构，defer可以多次，这样形成一个defer栈，后defer的语句在函数返回时将先被调用。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 func CopyFile(dstName, srcName string) (written int64, err error) { src, err := os.Open(srcName) if err != nil { return } defer src.]]></description>
 </item></channel>
 </rss>
